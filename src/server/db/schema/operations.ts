@@ -317,11 +317,11 @@ export const trips = pgTable(
     ),
     check(
       "trips_dispatch_data_required_by_stage",
-      sql`${table.status} NOT IN ('IN_TRANSIT', 'DELIVERED', 'SETTLEMENT_PENDING', 'SETTLED') OR (${table.challanNumber} IS NOT NULL AND ${table.dispatchedAt} IS NOT NULL)`
+      sql`${table.status} NOT IN ('IN_TRANSIT', 'DELIVERED', 'SETTLEMENT_PENDING', 'SETTLED') OR ${table.dispatchedAt} IS NOT NULL`
     ),
     check(
       "trips_delivery_data_required_by_stage",
-      sql`${table.status} NOT IN ('DELIVERED', 'SETTLEMENT_PENDING', 'SETTLED') OR (${table.finalWeightMt} IS NOT NULL AND ${table.weighmentCardNumber} IS NOT NULL AND ${table.deliveredAt} IS NOT NULL)`
+      sql`${table.status} NOT IN ('DELIVERED', 'SETTLEMENT_PENDING', 'SETTLED') OR (${table.finalWeightMt} IS NOT NULL AND ${table.challanNumber} IS NOT NULL AND ${table.weighmentCardNumber} IS NOT NULL AND ${table.deliveredAt} IS NOT NULL)`
     ),
     check(
       "trips_accepted_weight_required_by_stage",

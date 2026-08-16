@@ -1,0 +1,4 @@
+ALTER TABLE "trips" DROP CONSTRAINT "trips_dispatch_data_required_by_stage";--> statement-breakpoint
+ALTER TABLE "trips" DROP CONSTRAINT "trips_delivery_data_required_by_stage";--> statement-breakpoint
+ALTER TABLE "trips" ADD CONSTRAINT "trips_dispatch_data_required_by_stage" CHECK ("trips"."status" NOT IN ('IN_TRANSIT', 'DELIVERED', 'SETTLEMENT_PENDING', 'SETTLED') OR "trips"."dispatched_at" IS NOT NULL);--> statement-breakpoint
+ALTER TABLE "trips" ADD CONSTRAINT "trips_delivery_data_required_by_stage" CHECK ("trips"."status" NOT IN ('DELIVERED', 'SETTLEMENT_PENDING', 'SETTLED') OR ("trips"."final_weight_mt" IS NOT NULL AND "trips"."challan_number" IS NOT NULL AND "trips"."weighment_card_number" IS NOT NULL AND "trips"."delivered_at" IS NOT NULL));

@@ -24,6 +24,12 @@ import { Route as AuthenticatedAdminMaterialsRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
 import { Route as AuthenticatedAdminTransportersRouteImport } from './routes/_authenticated/admin/transporters'
 import { Route as AuthenticatedAdminVehiclesRouteImport } from './routes/_authenticated/admin/vehicles'
+import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
+import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app/activity'
+import { Route as AuthenticatedAppArchiveRouteImport } from './routes/_authenticated/app/archive'
+import { Route as AuthenticatedAppCompaniesRouteImport } from './routes/_authenticated/app/companies'
+import { Route as AuthenticatedAppTransportersRouteImport } from './routes/_authenticated/app/transporters'
+import { Route as AuthenticatedAppVendorsRouteImport } from './routes/_authenticated/app/vendors'
 import { Route as AuthenticatedAdminDriversIndexRouteImport } from './routes/_authenticated/admin/drivers/index'
 import { Route as AuthenticatedAdminDriversDriverIdRouteImport } from './routes/_authenticated/admin/drivers/$driverId'
 import { Route as AuthenticatedAdminDriversNewRouteImport } from './routes/_authenticated/admin/drivers/new'
@@ -33,6 +39,12 @@ import { Route as AuthenticatedAdminMembersNewRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminVendorsIndexRouteImport } from './routes/_authenticated/admin/vendors/index'
 import { Route as AuthenticatedAdminVendorsVendorIdRouteImport } from './routes/_authenticated/admin/vendors/$vendorId'
 import { Route as AuthenticatedAdminVendorsNewRouteImport } from './routes/_authenticated/admin/vendors/new'
+import { Route as AuthenticatedAppDealsIndexRouteImport } from './routes/_authenticated/app/deals/index'
+import { Route as AuthenticatedAppDealsDealIdRouteImport } from './routes/_authenticated/app/deals/$dealId'
+import { Route as AuthenticatedAppDealsNewRouteImport } from './routes/_authenticated/app/deals/new'
+import { Route as AuthenticatedAppTripsIndexRouteImport } from './routes/_authenticated/app/trips/index'
+import { Route as AuthenticatedAppTripsTripIdRouteImport } from './routes/_authenticated/app/trips/$tripId'
+import { Route as AuthenticatedAppDealsDealIdTripsNewRouteImport } from './routes/_authenticated/app/deals/$dealId/trips/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -115,6 +127,39 @@ const AuthenticatedAdminVehiclesRoute =
     path: '/vehicles',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppActivityRoute =
+  AuthenticatedAppActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppArchiveRoute = AuthenticatedAppArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppCompaniesRoute =
+  AuthenticatedAppCompaniesRouteImport.update({
+    id: '/companies',
+    path: '/companies',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppTransportersRoute =
+  AuthenticatedAppTransportersRouteImport.update({
+    id: '/transporters',
+    path: '/transporters',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppVendorsRoute = AuthenticatedAppVendorsRouteImport.update({
+  id: '/vendors',
+  path: '/vendors',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAdminDriversIndexRoute =
   AuthenticatedAdminDriversIndexRouteImport.update({
     id: '/drivers/',
@@ -169,12 +214,48 @@ const AuthenticatedAdminVendorsNewRoute =
     path: '/vendors/new',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAppDealsIndexRoute =
+  AuthenticatedAppDealsIndexRouteImport.update({
+    id: '/deals/',
+    path: '/deals/',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppDealsDealIdRoute =
+  AuthenticatedAppDealsDealIdRouteImport.update({
+    id: '/deals/$dealId',
+    path: '/deals/$dealId',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppDealsNewRoute =
+  AuthenticatedAppDealsNewRouteImport.update({
+    id: '/deals/new',
+    path: '/deals/new',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppTripsIndexRoute =
+  AuthenticatedAppTripsIndexRouteImport.update({
+    id: '/trips/',
+    path: '/trips/',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppTripsTripIdRoute =
+  AuthenticatedAppTripsTripIdRouteImport.update({
+    id: '/trips/$tripId',
+    path: '/trips/$tripId',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppDealsDealIdTripsNewRoute =
+  AuthenticatedAppDealsDealIdTripsNewRouteImport.update({
+    id: '/trips/new',
+    path: '/trips/new',
+    getParentRoute: () => AuthenticatedAppDealsDealIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/app': typeof AuthenticatedAppRoute
+  '/app': typeof AuthenticatedAppRouteWithChildren
   '/driver': typeof AuthenticatedDriverRoute
   '/vendor': typeof AuthenticatedVendorRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
@@ -184,21 +265,32 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/transporters': typeof AuthenticatedAdminTransportersRoute
   '/admin/vehicles': typeof AuthenticatedAdminVehiclesRoute
+  '/app/activity': typeof AuthenticatedAppActivityRoute
+  '/app/archive': typeof AuthenticatedAppArchiveRoute
+  '/app/companies': typeof AuthenticatedAppCompaniesRoute
+  '/app/transporters': typeof AuthenticatedAppTransportersRoute
+  '/app/vendors': typeof AuthenticatedAppVendorsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/app/': typeof AuthenticatedAppIndexRoute
   '/admin/drivers/$driverId': typeof AuthenticatedAdminDriversDriverIdRoute
   '/admin/drivers/new': typeof AuthenticatedAdminDriversNewRoute
   '/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
   '/admin/members/new': typeof AuthenticatedAdminMembersNewRoute
   '/admin/vendors/$vendorId': typeof AuthenticatedAdminVendorsVendorIdRoute
   '/admin/vendors/new': typeof AuthenticatedAdminVendorsNewRoute
+  '/app/deals/$dealId': typeof AuthenticatedAppDealsDealIdRouteWithChildren
+  '/app/deals/new': typeof AuthenticatedAppDealsNewRoute
+  '/app/trips/$tripId': typeof AuthenticatedAppTripsTripIdRoute
   '/admin/drivers/': typeof AuthenticatedAdminDriversIndexRoute
   '/admin/members/': typeof AuthenticatedAdminMembersIndexRoute
   '/admin/vendors/': typeof AuthenticatedAdminVendorsIndexRoute
+  '/app/deals/': typeof AuthenticatedAppDealsIndexRoute
+  '/app/trips/': typeof AuthenticatedAppTripsIndexRoute
+  '/app/deals/$dealId/trips/new': typeof AuthenticatedAppDealsDealIdTripsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/app': typeof AuthenticatedAppRoute
   '/driver': typeof AuthenticatedDriverRoute
   '/vendor': typeof AuthenticatedVendorRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
@@ -208,16 +300,28 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/transporters': typeof AuthenticatedAdminTransportersRoute
   '/admin/vehicles': typeof AuthenticatedAdminVehiclesRoute
+  '/app/activity': typeof AuthenticatedAppActivityRoute
+  '/app/archive': typeof AuthenticatedAppArchiveRoute
+  '/app/companies': typeof AuthenticatedAppCompaniesRoute
+  '/app/transporters': typeof AuthenticatedAppTransportersRoute
+  '/app/vendors': typeof AuthenticatedAppVendorsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/app': typeof AuthenticatedAppIndexRoute
   '/admin/drivers/$driverId': typeof AuthenticatedAdminDriversDriverIdRoute
   '/admin/drivers/new': typeof AuthenticatedAdminDriversNewRoute
   '/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
   '/admin/members/new': typeof AuthenticatedAdminMembersNewRoute
   '/admin/vendors/$vendorId': typeof AuthenticatedAdminVendorsVendorIdRoute
   '/admin/vendors/new': typeof AuthenticatedAdminVendorsNewRoute
+  '/app/deals/$dealId': typeof AuthenticatedAppDealsDealIdRouteWithChildren
+  '/app/deals/new': typeof AuthenticatedAppDealsNewRoute
+  '/app/trips/$tripId': typeof AuthenticatedAppTripsTripIdRoute
   '/admin/drivers': typeof AuthenticatedAdminDriversIndexRoute
   '/admin/members': typeof AuthenticatedAdminMembersIndexRoute
   '/admin/vendors': typeof AuthenticatedAdminVendorsIndexRoute
+  '/app/deals': typeof AuthenticatedAppDealsIndexRoute
+  '/app/trips': typeof AuthenticatedAppTripsIndexRoute
+  '/app/deals/$dealId/trips/new': typeof AuthenticatedAppDealsDealIdTripsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -225,7 +329,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/_authenticated/app': typeof AuthenticatedAppRoute
+  '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/driver': typeof AuthenticatedDriverRoute
   '/_authenticated/vendor': typeof AuthenticatedVendorRoute
   '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
@@ -235,16 +339,28 @@ export interface FileRoutesById {
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/transporters': typeof AuthenticatedAdminTransportersRoute
   '/_authenticated/admin/vehicles': typeof AuthenticatedAdminVehiclesRoute
+  '/_authenticated/app/activity': typeof AuthenticatedAppActivityRoute
+  '/_authenticated/app/archive': typeof AuthenticatedAppArchiveRoute
+  '/_authenticated/app/companies': typeof AuthenticatedAppCompaniesRoute
+  '/_authenticated/app/transporters': typeof AuthenticatedAppTransportersRoute
+  '/_authenticated/app/vendors': typeof AuthenticatedAppVendorsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/admin/drivers/$driverId': typeof AuthenticatedAdminDriversDriverIdRoute
   '/_authenticated/admin/drivers/new': typeof AuthenticatedAdminDriversNewRoute
   '/_authenticated/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
   '/_authenticated/admin/members/new': typeof AuthenticatedAdminMembersNewRoute
   '/_authenticated/admin/vendors/$vendorId': typeof AuthenticatedAdminVendorsVendorIdRoute
   '/_authenticated/admin/vendors/new': typeof AuthenticatedAdminVendorsNewRoute
+  '/_authenticated/app/deals/$dealId': typeof AuthenticatedAppDealsDealIdRouteWithChildren
+  '/_authenticated/app/deals/new': typeof AuthenticatedAppDealsNewRoute
+  '/_authenticated/app/trips/$tripId': typeof AuthenticatedAppTripsTripIdRoute
   '/_authenticated/admin/drivers/': typeof AuthenticatedAdminDriversIndexRoute
   '/_authenticated/admin/members/': typeof AuthenticatedAdminMembersIndexRoute
   '/_authenticated/admin/vendors/': typeof AuthenticatedAdminVendorsIndexRoute
+  '/_authenticated/app/deals/': typeof AuthenticatedAppDealsIndexRoute
+  '/_authenticated/app/trips/': typeof AuthenticatedAppTripsIndexRoute
+  '/_authenticated/app/deals/$dealId/trips/new': typeof AuthenticatedAppDealsDealIdTripsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -262,21 +378,32 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/transporters'
     | '/admin/vehicles'
+    | '/app/activity'
+    | '/app/archive'
+    | '/app/companies'
+    | '/app/transporters'
+    | '/app/vendors'
     | '/admin/'
+    | '/app/'
     | '/admin/drivers/$driverId'
     | '/admin/drivers/new'
     | '/admin/members/$memberId'
     | '/admin/members/new'
     | '/admin/vendors/$vendorId'
     | '/admin/vendors/new'
+    | '/app/deals/$dealId'
+    | '/app/deals/new'
+    | '/app/trips/$tripId'
     | '/admin/drivers/'
     | '/admin/members/'
     | '/admin/vendors/'
+    | '/app/deals/'
+    | '/app/trips/'
+    | '/app/deals/$dealId/trips/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
-    | '/app'
     | '/driver'
     | '/vendor'
     | '/admin/activity'
@@ -286,16 +413,28 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/transporters'
     | '/admin/vehicles'
+    | '/app/activity'
+    | '/app/archive'
+    | '/app/companies'
+    | '/app/transporters'
+    | '/app/vendors'
     | '/admin'
+    | '/app'
     | '/admin/drivers/$driverId'
     | '/admin/drivers/new'
     | '/admin/members/$memberId'
     | '/admin/members/new'
     | '/admin/vendors/$vendorId'
     | '/admin/vendors/new'
+    | '/app/deals/$dealId'
+    | '/app/deals/new'
+    | '/app/trips/$tripId'
     | '/admin/drivers'
     | '/admin/members'
     | '/admin/vendors'
+    | '/app/deals'
+    | '/app/trips'
+    | '/app/deals/$dealId/trips/new'
   id:
     | '__root__'
     | '/'
@@ -312,16 +451,28 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/transporters'
     | '/_authenticated/admin/vehicles'
+    | '/_authenticated/app/activity'
+    | '/_authenticated/app/archive'
+    | '/_authenticated/app/companies'
+    | '/_authenticated/app/transporters'
+    | '/_authenticated/app/vendors'
     | '/_authenticated/admin/'
+    | '/_authenticated/app/'
     | '/_authenticated/admin/drivers/$driverId'
     | '/_authenticated/admin/drivers/new'
     | '/_authenticated/admin/members/$memberId'
     | '/_authenticated/admin/members/new'
     | '/_authenticated/admin/vendors/$vendorId'
     | '/_authenticated/admin/vendors/new'
+    | '/_authenticated/app/deals/$dealId'
+    | '/_authenticated/app/deals/new'
+    | '/_authenticated/app/trips/$tripId'
     | '/_authenticated/admin/drivers/'
     | '/_authenticated/admin/members/'
     | '/_authenticated/admin/vendors/'
+    | '/_authenticated/app/deals/'
+    | '/_authenticated/app/trips/'
+    | '/_authenticated/app/deals/$dealId/trips/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -437,6 +588,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminVehiclesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/app/': {
+      id: '/_authenticated/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/activity': {
+      id: '/_authenticated/app/activity'
+      path: '/activity'
+      fullPath: '/app/activity'
+      preLoaderRoute: typeof AuthenticatedAppActivityRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/archive': {
+      id: '/_authenticated/app/archive'
+      path: '/archive'
+      fullPath: '/app/archive'
+      preLoaderRoute: typeof AuthenticatedAppArchiveRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/companies': {
+      id: '/_authenticated/app/companies'
+      path: '/companies'
+      fullPath: '/app/companies'
+      preLoaderRoute: typeof AuthenticatedAppCompaniesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/transporters': {
+      id: '/_authenticated/app/transporters'
+      path: '/transporters'
+      fullPath: '/app/transporters'
+      preLoaderRoute: typeof AuthenticatedAppTransportersRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/vendors': {
+      id: '/_authenticated/app/vendors'
+      path: '/vendors'
+      fullPath: '/app/vendors'
+      preLoaderRoute: typeof AuthenticatedAppVendorsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/admin/drivers/': {
       id: '/_authenticated/admin/drivers/'
       path: '/drivers'
@@ -500,6 +693,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminVendorsNewRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/app/deals/': {
+      id: '/_authenticated/app/deals/'
+      path: '/deals'
+      fullPath: '/app/deals/'
+      preLoaderRoute: typeof AuthenticatedAppDealsIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/deals/$dealId': {
+      id: '/_authenticated/app/deals/$dealId'
+      path: '/deals/$dealId'
+      fullPath: '/app/deals/$dealId'
+      preLoaderRoute: typeof AuthenticatedAppDealsDealIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/deals/new': {
+      id: '/_authenticated/app/deals/new'
+      path: '/deals/new'
+      fullPath: '/app/deals/new'
+      preLoaderRoute: typeof AuthenticatedAppDealsNewRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/trips/': {
+      id: '/_authenticated/app/trips/'
+      path: '/trips'
+      fullPath: '/app/trips/'
+      preLoaderRoute: typeof AuthenticatedAppTripsIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/trips/$tripId': {
+      id: '/_authenticated/app/trips/$tripId'
+      path: '/trips/$tripId'
+      fullPath: '/app/trips/$tripId'
+      preLoaderRoute: typeof AuthenticatedAppTripsTripIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/deals/$dealId/trips/new': {
+      id: '/_authenticated/app/deals/$dealId/trips/new'
+      path: '/trips/new'
+      fullPath: '/app/deals/$dealId/trips/new'
+      preLoaderRoute: typeof AuthenticatedAppDealsDealIdTripsNewRouteImport
+      parentRoute: typeof AuthenticatedAppDealsDealIdRoute
+    }
   }
 }
 
@@ -549,16 +784,63 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
+interface AuthenticatedAppDealsDealIdRouteChildren {
+  AuthenticatedAppDealsDealIdTripsNewRoute: typeof AuthenticatedAppDealsDealIdTripsNewRoute
+}
+
+const AuthenticatedAppDealsDealIdRouteChildren: AuthenticatedAppDealsDealIdRouteChildren =
+  {
+    AuthenticatedAppDealsDealIdTripsNewRoute:
+      AuthenticatedAppDealsDealIdTripsNewRoute,
+  }
+
+const AuthenticatedAppDealsDealIdRouteWithChildren =
+  AuthenticatedAppDealsDealIdRoute._addFileChildren(
+    AuthenticatedAppDealsDealIdRouteChildren,
+  )
+
+interface AuthenticatedAppRouteChildren {
+  AuthenticatedAppActivityRoute: typeof AuthenticatedAppActivityRoute
+  AuthenticatedAppArchiveRoute: typeof AuthenticatedAppArchiveRoute
+  AuthenticatedAppCompaniesRoute: typeof AuthenticatedAppCompaniesRoute
+  AuthenticatedAppTransportersRoute: typeof AuthenticatedAppTransportersRoute
+  AuthenticatedAppVendorsRoute: typeof AuthenticatedAppVendorsRoute
+  AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedAppDealsDealIdRoute: typeof AuthenticatedAppDealsDealIdRouteWithChildren
+  AuthenticatedAppDealsNewRoute: typeof AuthenticatedAppDealsNewRoute
+  AuthenticatedAppTripsTripIdRoute: typeof AuthenticatedAppTripsTripIdRoute
+  AuthenticatedAppDealsIndexRoute: typeof AuthenticatedAppDealsIndexRoute
+  AuthenticatedAppTripsIndexRoute: typeof AuthenticatedAppTripsIndexRoute
+}
+
+const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
+  AuthenticatedAppActivityRoute: AuthenticatedAppActivityRoute,
+  AuthenticatedAppArchiveRoute: AuthenticatedAppArchiveRoute,
+  AuthenticatedAppCompaniesRoute: AuthenticatedAppCompaniesRoute,
+  AuthenticatedAppTransportersRoute: AuthenticatedAppTransportersRoute,
+  AuthenticatedAppVendorsRoute: AuthenticatedAppVendorsRoute,
+  AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedAppDealsDealIdRoute:
+    AuthenticatedAppDealsDealIdRouteWithChildren,
+  AuthenticatedAppDealsNewRoute: AuthenticatedAppDealsNewRoute,
+  AuthenticatedAppTripsTripIdRoute: AuthenticatedAppTripsTripIdRoute,
+  AuthenticatedAppDealsIndexRoute: AuthenticatedAppDealsIndexRoute,
+  AuthenticatedAppTripsIndexRoute: AuthenticatedAppTripsIndexRoute,
+}
+
+const AuthenticatedAppRouteWithChildren =
+  AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
-  AuthenticatedAppRoute: typeof AuthenticatedAppRoute
+  AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
   AuthenticatedDriverRoute: typeof AuthenticatedDriverRoute
   AuthenticatedVendorRoute: typeof AuthenticatedVendorRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
-  AuthenticatedAppRoute: AuthenticatedAppRoute,
+  AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
   AuthenticatedDriverRoute: AuthenticatedDriverRoute,
   AuthenticatedVendorRoute: AuthenticatedVendorRoute,
 }

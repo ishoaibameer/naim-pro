@@ -8,12 +8,14 @@ import {
   IconChevronDown,
   IconDashboard,
   IconDots,
+  IconFileInvoice,
   IconLogout,
   IconMapPin,
   IconPackage,
   IconSettings,
   IconSteeringWheel,
   IconTruck,
+  IconTruckDelivery,
   IconUsers,
 } from "@tabler/icons-react"
 
@@ -55,6 +57,13 @@ const navigation = [
     ],
   },
   {
+    label: "Operations",
+    links: [
+      { label: "Deals", to: "/app/deals", icon: IconFileInvoice },
+      { label: "Trips", to: "/app/trips", icon: IconTruckDelivery },
+    ],
+  },
+  {
     label: "System",
     links: [
       { label: "Activity", to: "/admin/activity", icon: IconActivity },
@@ -66,7 +75,7 @@ const navigation = [
 const mobilePrimary = [
   navigation[0].links[0],
   navigation[1].links[0],
-  navigation[3].links[0],
+  navigation[3].links[1],
 ] as const
 
 export function AdminShell({ adminName }: { adminName: string }) {
