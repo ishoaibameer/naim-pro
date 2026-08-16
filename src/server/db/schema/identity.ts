@@ -41,6 +41,7 @@ export const users = pgTable(
   "users",
   {
     id: uuid("id").defaultRandom().primaryKey(),
+    name: varchar("name", { length: 160 }).notNull(),
     phoneE164: varchar("phone_e164", { length: 16 }).notNull(),
     passwordHash: text("password_hash").notNull(),
     status: recordStatusEnum("status").default("ACTIVE").notNull(),
@@ -54,6 +55,7 @@ export const users = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
+    securityVersion: integer("security_version").default(1).notNull(),
     version: integer("version").default(1).notNull(),
   },
   (table) => [
@@ -62,6 +64,8 @@ export const users = pgTable(
       "users_phone_e164_format",
       sql`${table.phoneE164} ~ '^\\+[1-9][0-9]{7,14}$'`
     ),
+    check("users_name_not_blank", sql`length(trim(${table.name})) > 0`),
+    check("users_security_version_positive", sql`${table.securityVersion} > 0`),
     check("users_version_positive", sql`${table.version} > 0`),
   ]
 )
@@ -117,9 +121,10 @@ export const sessions = pgTable(
     activeMembershipId: uuid("active_membership_id").notNull(),
     tokenHash: text("token_hash").notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    lastSeenAt: timestamp("last_seen_at", { withTimezone: true })
+    lastActiveAt: timestamp("last_seen_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
+    userSecurityVersion: integer("user_security_version").notNull(),
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -146,6 +151,40 @@ export const sessions = pgTable(
     check(
       "sessions_expiry_after_creation",
       sql`${table.expiresAt} > ${table.createdAt}`
+    ),
+    check(
+      "sessions_security_version_positive",
+      sql`${table.userSecurityVersion} > 0`
+    ),
+  ]
+)
+
+export const authLoginFailures = pgTable(
+  "auth_login_failures",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    accountKey: varchar("account_key", { length: 64 }).notNull(),
+    networkKey: varchar("network_key", { length: 64 }).notNull(),
+    attemptedAt: timestamp("attempted_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("auth_login_failures_account_time_idx").on(
+      table.accountKey,
+      table.attemptedAt
+    ),
+    index("auth_login_failures_network_time_idx").on(
+      table.networkKey,
+      table.attemptedAt
+    ),
+    check(
+      "auth_login_failures_account_key_format",
+      sql`${table.accountKey} ~ '^[a-f0-9]{64}$'`
+    ),
+    check(
+      "auth_login_failures_network_key_format",
+      sql`${table.networkKey} ~ '^[a-f0-9]{64}$'`
     ),
   ]
 )

@@ -10,33 +10,324 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
+import { Route as AuthenticatedVendorRouteImport } from './routes/_authenticated/vendor'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin/activity'
+import { Route as AuthenticatedAdminCompaniesRouteImport } from './routes/_authenticated/admin/companies'
+import { Route as AuthenticatedAdminLocationsRouteImport } from './routes/_authenticated/admin/locations'
+import { Route as AuthenticatedAdminMaterialsRouteImport } from './routes/_authenticated/admin/materials'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
+import { Route as AuthenticatedAdminTransportersRouteImport } from './routes/_authenticated/admin/transporters'
+import { Route as AuthenticatedAdminVehiclesRouteImport } from './routes/_authenticated/admin/vehicles'
+import { Route as AuthenticatedAdminDriversIndexRouteImport } from './routes/_authenticated/admin/drivers/index'
+import { Route as AuthenticatedAdminDriversDriverIdRouteImport } from './routes/_authenticated/admin/drivers/$driverId'
+import { Route as AuthenticatedAdminDriversNewRouteImport } from './routes/_authenticated/admin/drivers/new'
+import { Route as AuthenticatedAdminMembersIndexRouteImport } from './routes/_authenticated/admin/members/index'
+import { Route as AuthenticatedAdminMembersMemberIdRouteImport } from './routes/_authenticated/admin/members/$memberId'
+import { Route as AuthenticatedAdminMembersNewRouteImport } from './routes/_authenticated/admin/members/new'
+import { Route as AuthenticatedAdminVendorsIndexRouteImport } from './routes/_authenticated/admin/vendors/index'
+import { Route as AuthenticatedAdminVendorsVendorIdRouteImport } from './routes/_authenticated/admin/vendors/$vendorId'
+import { Route as AuthenticatedAdminVendorsNewRouteImport } from './routes/_authenticated/admin/vendors/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDriverRoute = AuthenticatedDriverRouteImport.update({
+  id: '/driver',
+  path: '/driver',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedVendorRoute = AuthenticatedVendorRouteImport.update({
+  id: '/vendor',
+  path: '/vendor',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminActivityRoute =
+  AuthenticatedAdminActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminCompaniesRoute =
+  AuthenticatedAdminCompaniesRouteImport.update({
+    id: '/companies',
+    path: '/companies',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminLocationsRoute =
+  AuthenticatedAdminLocationsRouteImport.update({
+    id: '/locations',
+    path: '/locations',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminMaterialsRoute =
+  AuthenticatedAdminMaterialsRouteImport.update({
+    id: '/materials',
+    path: '/materials',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminTransportersRoute =
+  AuthenticatedAdminTransportersRouteImport.update({
+    id: '/transporters',
+    path: '/transporters',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminVehiclesRoute =
+  AuthenticatedAdminVehiclesRouteImport.update({
+    id: '/vehicles',
+    path: '/vehicles',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminDriversIndexRoute =
+  AuthenticatedAdminDriversIndexRouteImport.update({
+    id: '/drivers/',
+    path: '/drivers/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminDriversDriverIdRoute =
+  AuthenticatedAdminDriversDriverIdRouteImport.update({
+    id: '/drivers/$driverId',
+    path: '/drivers/$driverId',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminDriversNewRoute =
+  AuthenticatedAdminDriversNewRouteImport.update({
+    id: '/drivers/new',
+    path: '/drivers/new',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminMembersIndexRoute =
+  AuthenticatedAdminMembersIndexRouteImport.update({
+    id: '/members/',
+    path: '/members/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminMembersMemberIdRoute =
+  AuthenticatedAdminMembersMemberIdRouteImport.update({
+    id: '/members/$memberId',
+    path: '/members/$memberId',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminMembersNewRoute =
+  AuthenticatedAdminMembersNewRouteImport.update({
+    id: '/members/new',
+    path: '/members/new',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminVendorsIndexRoute =
+  AuthenticatedAdminVendorsIndexRouteImport.update({
+    id: '/vendors/',
+    path: '/vendors/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminVendorsVendorIdRoute =
+  AuthenticatedAdminVendorsVendorIdRouteImport.update({
+    id: '/vendors/$vendorId',
+    path: '/vendors/$vendorId',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminVendorsNewRoute =
+  AuthenticatedAdminVendorsNewRouteImport.update({
+    id: '/vendors/new',
+    path: '/vendors/new',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/app': typeof AuthenticatedAppRoute
+  '/driver': typeof AuthenticatedDriverRoute
+  '/vendor': typeof AuthenticatedVendorRoute
+  '/admin/activity': typeof AuthenticatedAdminActivityRoute
+  '/admin/companies': typeof AuthenticatedAdminCompaniesRoute
+  '/admin/locations': typeof AuthenticatedAdminLocationsRoute
+  '/admin/materials': typeof AuthenticatedAdminMaterialsRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/transporters': typeof AuthenticatedAdminTransportersRoute
+  '/admin/vehicles': typeof AuthenticatedAdminVehiclesRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/drivers/$driverId': typeof AuthenticatedAdminDriversDriverIdRoute
+  '/admin/drivers/new': typeof AuthenticatedAdminDriversNewRoute
+  '/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
+  '/admin/members/new': typeof AuthenticatedAdminMembersNewRoute
+  '/admin/vendors/$vendorId': typeof AuthenticatedAdminVendorsVendorIdRoute
+  '/admin/vendors/new': typeof AuthenticatedAdminVendorsNewRoute
+  '/admin/drivers/': typeof AuthenticatedAdminDriversIndexRoute
+  '/admin/members/': typeof AuthenticatedAdminMembersIndexRoute
+  '/admin/vendors/': typeof AuthenticatedAdminVendorsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/app': typeof AuthenticatedAppRoute
+  '/driver': typeof AuthenticatedDriverRoute
+  '/vendor': typeof AuthenticatedVendorRoute
+  '/admin/activity': typeof AuthenticatedAdminActivityRoute
+  '/admin/companies': typeof AuthenticatedAdminCompaniesRoute
+  '/admin/locations': typeof AuthenticatedAdminLocationsRoute
+  '/admin/materials': typeof AuthenticatedAdminMaterialsRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/transporters': typeof AuthenticatedAdminTransportersRoute
+  '/admin/vehicles': typeof AuthenticatedAdminVehiclesRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/drivers/$driverId': typeof AuthenticatedAdminDriversDriverIdRoute
+  '/admin/drivers/new': typeof AuthenticatedAdminDriversNewRoute
+  '/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
+  '/admin/members/new': typeof AuthenticatedAdminMembersNewRoute
+  '/admin/vendors/$vendorId': typeof AuthenticatedAdminVendorsVendorIdRoute
+  '/admin/vendors/new': typeof AuthenticatedAdminVendorsNewRoute
+  '/admin/drivers': typeof AuthenticatedAdminDriversIndexRoute
+  '/admin/members': typeof AuthenticatedAdminMembersIndexRoute
+  '/admin/vendors': typeof AuthenticatedAdminVendorsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/app': typeof AuthenticatedAppRoute
+  '/_authenticated/driver': typeof AuthenticatedDriverRoute
+  '/_authenticated/vendor': typeof AuthenticatedVendorRoute
+  '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
+  '/_authenticated/admin/companies': typeof AuthenticatedAdminCompaniesRoute
+  '/_authenticated/admin/locations': typeof AuthenticatedAdminLocationsRoute
+  '/_authenticated/admin/materials': typeof AuthenticatedAdminMaterialsRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/transporters': typeof AuthenticatedAdminTransportersRoute
+  '/_authenticated/admin/vehicles': typeof AuthenticatedAdminVehiclesRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/drivers/$driverId': typeof AuthenticatedAdminDriversDriverIdRoute
+  '/_authenticated/admin/drivers/new': typeof AuthenticatedAdminDriversNewRoute
+  '/_authenticated/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
+  '/_authenticated/admin/members/new': typeof AuthenticatedAdminMembersNewRoute
+  '/_authenticated/admin/vendors/$vendorId': typeof AuthenticatedAdminVendorsVendorIdRoute
+  '/_authenticated/admin/vendors/new': typeof AuthenticatedAdminVendorsNewRoute
+  '/_authenticated/admin/drivers/': typeof AuthenticatedAdminDriversIndexRoute
+  '/_authenticated/admin/members/': typeof AuthenticatedAdminMembersIndexRoute
+  '/_authenticated/admin/vendors/': typeof AuthenticatedAdminVendorsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/admin'
+    | '/app'
+    | '/driver'
+    | '/vendor'
+    | '/admin/activity'
+    | '/admin/companies'
+    | '/admin/locations'
+    | '/admin/materials'
+    | '/admin/settings'
+    | '/admin/transporters'
+    | '/admin/vehicles'
+    | '/admin/'
+    | '/admin/drivers/$driverId'
+    | '/admin/drivers/new'
+    | '/admin/members/$memberId'
+    | '/admin/members/new'
+    | '/admin/vendors/$vendorId'
+    | '/admin/vendors/new'
+    | '/admin/drivers/'
+    | '/admin/members/'
+    | '/admin/vendors/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/app'
+    | '/driver'
+    | '/vendor'
+    | '/admin/activity'
+    | '/admin/companies'
+    | '/admin/locations'
+    | '/admin/materials'
+    | '/admin/settings'
+    | '/admin/transporters'
+    | '/admin/vehicles'
+    | '/admin'
+    | '/admin/drivers/$driverId'
+    | '/admin/drivers/new'
+    | '/admin/members/$memberId'
+    | '/admin/members/new'
+    | '/admin/vendors/$vendorId'
+    | '/admin/vendors/new'
+    | '/admin/drivers'
+    | '/admin/members'
+    | '/admin/vendors'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/_authenticated/admin'
+    | '/_authenticated/app'
+    | '/_authenticated/driver'
+    | '/_authenticated/vendor'
+    | '/_authenticated/admin/activity'
+    | '/_authenticated/admin/companies'
+    | '/_authenticated/admin/locations'
+    | '/_authenticated/admin/materials'
+    | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/transporters'
+    | '/_authenticated/admin/vehicles'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/drivers/$driverId'
+    | '/_authenticated/admin/drivers/new'
+    | '/_authenticated/admin/members/$memberId'
+    | '/_authenticated/admin/members/new'
+    | '/_authenticated/admin/vendors/$vendorId'
+    | '/_authenticated/admin/vendors/new'
+    | '/_authenticated/admin/drivers/'
+    | '/_authenticated/admin/members/'
+    | '/_authenticated/admin/vendors/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +339,238 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/driver': {
+      id: '/_authenticated/driver'
+      path: '/driver'
+      fullPath: '/driver'
+      preLoaderRoute: typeof AuthenticatedDriverRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/vendor': {
+      id: '/_authenticated/vendor'
+      path: '/vendor'
+      fullPath: '/vendor'
+      preLoaderRoute: typeof AuthenticatedVendorRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/activity': {
+      id: '/_authenticated/admin/activity'
+      path: '/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AuthenticatedAdminActivityRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/companies': {
+      id: '/_authenticated/admin/companies'
+      path: '/companies'
+      fullPath: '/admin/companies'
+      preLoaderRoute: typeof AuthenticatedAdminCompaniesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/locations': {
+      id: '/_authenticated/admin/locations'
+      path: '/locations'
+      fullPath: '/admin/locations'
+      preLoaderRoute: typeof AuthenticatedAdminLocationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/materials': {
+      id: '/_authenticated/admin/materials'
+      path: '/materials'
+      fullPath: '/admin/materials'
+      preLoaderRoute: typeof AuthenticatedAdminMaterialsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/transporters': {
+      id: '/_authenticated/admin/transporters'
+      path: '/transporters'
+      fullPath: '/admin/transporters'
+      preLoaderRoute: typeof AuthenticatedAdminTransportersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/vehicles': {
+      id: '/_authenticated/admin/vehicles'
+      path: '/vehicles'
+      fullPath: '/admin/vehicles'
+      preLoaderRoute: typeof AuthenticatedAdminVehiclesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/drivers/': {
+      id: '/_authenticated/admin/drivers/'
+      path: '/drivers'
+      fullPath: '/admin/drivers/'
+      preLoaderRoute: typeof AuthenticatedAdminDriversIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/drivers/$driverId': {
+      id: '/_authenticated/admin/drivers/$driverId'
+      path: '/drivers/$driverId'
+      fullPath: '/admin/drivers/$driverId'
+      preLoaderRoute: typeof AuthenticatedAdminDriversDriverIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/drivers/new': {
+      id: '/_authenticated/admin/drivers/new'
+      path: '/drivers/new'
+      fullPath: '/admin/drivers/new'
+      preLoaderRoute: typeof AuthenticatedAdminDriversNewRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/members/': {
+      id: '/_authenticated/admin/members/'
+      path: '/members'
+      fullPath: '/admin/members/'
+      preLoaderRoute: typeof AuthenticatedAdminMembersIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/members/$memberId': {
+      id: '/_authenticated/admin/members/$memberId'
+      path: '/members/$memberId'
+      fullPath: '/admin/members/$memberId'
+      preLoaderRoute: typeof AuthenticatedAdminMembersMemberIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/members/new': {
+      id: '/_authenticated/admin/members/new'
+      path: '/members/new'
+      fullPath: '/admin/members/new'
+      preLoaderRoute: typeof AuthenticatedAdminMembersNewRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/vendors/': {
+      id: '/_authenticated/admin/vendors/'
+      path: '/vendors'
+      fullPath: '/admin/vendors/'
+      preLoaderRoute: typeof AuthenticatedAdminVendorsIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/vendors/$vendorId': {
+      id: '/_authenticated/admin/vendors/$vendorId'
+      path: '/vendors/$vendorId'
+      fullPath: '/admin/vendors/$vendorId'
+      preLoaderRoute: typeof AuthenticatedAdminVendorsVendorIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/vendors/new': {
+      id: '/_authenticated/admin/vendors/new'
+      path: '/vendors/new'
+      fullPath: '/admin/vendors/new'
+      preLoaderRoute: typeof AuthenticatedAdminVendorsNewRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminActivityRoute: typeof AuthenticatedAdminActivityRoute
+  AuthenticatedAdminCompaniesRoute: typeof AuthenticatedAdminCompaniesRoute
+  AuthenticatedAdminLocationsRoute: typeof AuthenticatedAdminLocationsRoute
+  AuthenticatedAdminMaterialsRoute: typeof AuthenticatedAdminMaterialsRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminTransportersRoute: typeof AuthenticatedAdminTransportersRoute
+  AuthenticatedAdminVehiclesRoute: typeof AuthenticatedAdminVehiclesRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminDriversDriverIdRoute: typeof AuthenticatedAdminDriversDriverIdRoute
+  AuthenticatedAdminDriversNewRoute: typeof AuthenticatedAdminDriversNewRoute
+  AuthenticatedAdminMembersMemberIdRoute: typeof AuthenticatedAdminMembersMemberIdRoute
+  AuthenticatedAdminMembersNewRoute: typeof AuthenticatedAdminMembersNewRoute
+  AuthenticatedAdminVendorsVendorIdRoute: typeof AuthenticatedAdminVendorsVendorIdRoute
+  AuthenticatedAdminVendorsNewRoute: typeof AuthenticatedAdminVendorsNewRoute
+  AuthenticatedAdminDriversIndexRoute: typeof AuthenticatedAdminDriversIndexRoute
+  AuthenticatedAdminMembersIndexRoute: typeof AuthenticatedAdminMembersIndexRoute
+  AuthenticatedAdminVendorsIndexRoute: typeof AuthenticatedAdminVendorsIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminActivityRoute: AuthenticatedAdminActivityRoute,
+  AuthenticatedAdminCompaniesRoute: AuthenticatedAdminCompaniesRoute,
+  AuthenticatedAdminLocationsRoute: AuthenticatedAdminLocationsRoute,
+  AuthenticatedAdminMaterialsRoute: AuthenticatedAdminMaterialsRoute,
+  AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminTransportersRoute: AuthenticatedAdminTransportersRoute,
+  AuthenticatedAdminVehiclesRoute: AuthenticatedAdminVehiclesRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminDriversDriverIdRoute:
+    AuthenticatedAdminDriversDriverIdRoute,
+  AuthenticatedAdminDriversNewRoute: AuthenticatedAdminDriversNewRoute,
+  AuthenticatedAdminMembersMemberIdRoute:
+    AuthenticatedAdminMembersMemberIdRoute,
+  AuthenticatedAdminMembersNewRoute: AuthenticatedAdminMembersNewRoute,
+  AuthenticatedAdminVendorsVendorIdRoute:
+    AuthenticatedAdminVendorsVendorIdRoute,
+  AuthenticatedAdminVendorsNewRoute: AuthenticatedAdminVendorsNewRoute,
+  AuthenticatedAdminDriversIndexRoute: AuthenticatedAdminDriversIndexRoute,
+  AuthenticatedAdminMembersIndexRoute: AuthenticatedAdminMembersIndexRoute,
+  AuthenticatedAdminVendorsIndexRoute: AuthenticatedAdminVendorsIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedAppRoute: typeof AuthenticatedAppRoute
+  AuthenticatedDriverRoute: typeof AuthenticatedDriverRoute
+  AuthenticatedVendorRoute: typeof AuthenticatedVendorRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedAppRoute: AuthenticatedAppRoute,
+  AuthenticatedDriverRoute: AuthenticatedDriverRoute,
+  AuthenticatedVendorRoute: AuthenticatedVendorRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

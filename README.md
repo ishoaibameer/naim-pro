@@ -61,3 +61,6 @@ increment it atomically; updating zero rows indicates a concurrency conflict.
 - Keep secrets and persistence code behind explicit TanStack Start server
   boundaries.
 - Do not import server-only modules into client bundles.
+
+Authentication security decisions are documented in
+[`docs/architecture/authentication.md`](docs/architecture/authentication.md).

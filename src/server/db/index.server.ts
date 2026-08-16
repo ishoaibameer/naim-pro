@@ -6,7 +6,7 @@ import postgres from "postgres"
 import { getServerEnv } from "../env.server"
 import * as schema from "./schema"
 
-type Database = ReturnType<typeof createDatabase>
+export type Database = ReturnType<typeof createDatabase>
 
 let database: Database | undefined
 let sqlClient: ReturnType<typeof postgres> | undefined

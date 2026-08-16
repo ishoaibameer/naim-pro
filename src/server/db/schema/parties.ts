@@ -39,8 +39,10 @@ export const vendors = pgTable(
       .references(() => organizations.id),
     name: varchar("name", { length: 180 }).notNull(),
     normalizedName: varchar("normalized_name", { length: 180 }).notNull(),
+    contactPerson: varchar("contact_person", { length: 160 }),
     userId: uuid("user_id"),
     phoneE164: varchar("phone_e164", { length: 16 }),
+    location: varchar("location", { length: 180 }),
     notes: text("notes"),
     createdByMembershipId: uuid("created_by_membership_id").notNull(),
     updatedByMembershipId: uuid("updated_by_membership_id").notNull(),
@@ -84,7 +86,9 @@ export const transporters = pgTable(
       .references(() => organizations.id),
     name: varchar("name", { length: 180 }).notNull(),
     normalizedName: varchar("normalized_name", { length: 180 }).notNull(),
+    contactPerson: varchar("contact_person", { length: 160 }),
     phoneE164: varchar("phone_e164", { length: 16 }),
+    location: varchar("location", { length: 180 }),
     notes: text("notes"),
     createdByMembershipId: uuid("created_by_membership_id").notNull(),
     updatedByMembershipId: uuid("updated_by_membership_id").notNull(),
@@ -218,7 +222,9 @@ export const companies = pgTable(
       .references(() => organizations.id),
     name: varchar("name", { length: 180 }).notNull(),
     normalizedName: varchar("normalized_name", { length: 180 }).notNull(),
+    contactPerson: varchar("contact_person", { length: 160 }),
     phoneE164: varchar("phone_e164", { length: 16 }),
+    location: varchar("location", { length: 180 }),
     billingAddress: text("billing_address"),
     createdByMembershipId: uuid("created_by_membership_id").notNull(),
     updatedByMembershipId: uuid("updated_by_membership_id").notNull(),
@@ -295,6 +301,7 @@ export const locations = pgTable(
       .references(() => organizations.id),
     name: varchar("name", { length: 180 }).notNull(),
     normalizedName: varchar("normalized_name", { length: 180 }).notNull(),
+    type: varchar("type", { length: 24 }),
     address: text("address"),
     latitude: numeric("latitude", { precision: 9, scale: 6 }),
     longitude: numeric("longitude", { precision: 9, scale: 6 }),
@@ -329,6 +336,10 @@ export const locations = pgTable(
     check(
       "locations_longitude_range",
       sql`${table.longitude} IS NULL OR ${table.longitude} BETWEEN -180 AND 180`
+    ),
+    check(
+      "locations_type_valid",
+      sql`${table.type} IS NULL OR ${table.type} IN ('PICKUP', 'DESTINATION', 'OTHER')`
     ),
     check("locations_version_positive", sql`${table.version} > 0`),
   ]
