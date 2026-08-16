@@ -15,7 +15,16 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "NAIM PRO",
+      },
+      {
+        name: "description",
+        content:
+          "Mobile-first wood trading, logistics, payment, document, and audit management system.",
+      },
+      {
+        name: "application-name",
+        content: "NAIM PRO",
       },
     ],
     links: [
