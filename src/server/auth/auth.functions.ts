@@ -19,6 +19,7 @@ import {
   getNetworkIdentifier,
 } from "./request-security.server"
 import { getCurrentAuthContext, revokeSession } from "./session.server"
+import { logger } from "@/server/observability/logger.server"
 
 const loginInputSchema = z.object({
   phone: z.string().trim().min(1).max(64),
@@ -53,6 +54,11 @@ export const login = createServerFn({ method: "POST" })
     if (priorToken) await revokeSession(priorToken)
     setSessionCookie(result.sessionToken)
     setResponseHeader("Cache-Control", "no-store")
+    logger.info("auth.login.succeeded", {
+      userId: result.auth.user.id,
+      membershipId: result.auth.membership.id,
+      organizationId: result.auth.membership.organizationId,
+    })
     return result.auth
   })
 

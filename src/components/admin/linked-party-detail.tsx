@@ -1,5 +1,5 @@
 import { useState } from "react"
-import type { FormEvent } from "react"
+import type { FormEvent, ReactNode } from "react"
 import { useRouter } from "@tanstack/react-router"
 import { useServerFn } from "@tanstack/react-start"
 
@@ -45,9 +45,11 @@ export interface LinkedPartyDetailData {
 export function LinkedPartyDetail({
   kind,
   party,
+  additionalContent,
 }: {
   kind: "VENDOR" | "DRIVER"
   party: LinkedPartyDetailData
+  additionalContent?: ReactNode
 }) {
   const router = useRouter()
   const setBusinessStatus = useServerFn(setPartyStatusFn)
@@ -112,6 +114,7 @@ export function LinkedPartyDetail({
           />
         }
       />
+      {additionalContent}
       <Tabs defaultValue="overview">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>

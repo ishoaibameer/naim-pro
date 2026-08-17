@@ -1,10 +1,25 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
 
-import { RoleLandingPage } from "@/components/admin/role-landing-page"
+import { VendorShell } from "@/components/vendor/vendor-shell"
+import { requireVendorAccessFn } from "@/server/vendor/vendor.functions"
 
 export const Route = createFileRoute("/_authenticated/vendor")({
-  beforeLoad: ({ context }) => {
-    if (context.auth.membership.role !== "VENDOR") throw redirect({ to: "/" })
+  beforeLoad: async () => {
+    try {
+      return { vendorAuth: await requireVendorAccessFn() }
+    } catch {
+      throw redirect({ to: "/" })
+    }
   },
-  component: () => <RoleLandingPage title="Vendor workspace" />,
+  component: VendorLayout,
 })
+
+function VendorLayout() {
+  const { vendorAuth } = Route.useRouteContext()
+  return (
+    <VendorShell
+      userName={vendorAuth.user.name}
+      vendorName={vendorAuth.vendor.name}
+    />
+  )
+}

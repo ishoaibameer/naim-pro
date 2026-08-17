@@ -5,6 +5,7 @@ import { and, count, desc, eq, gte, ilike, lte, or, sql } from "drizzle-orm"
 import { alias } from "drizzle-orm/pg-core"
 import type { z } from "zod"
 
+import { requireRole } from "@/server/auth/policy"
 import type { SafeAuthContext } from "@/server/auth/types"
 import { getDatabase } from "@/server/db/index.server"
 import {
@@ -18,7 +19,12 @@ import {
   users,
   vendors,
 } from "@/server/db/schema"
-import type { createDealSchema, dealListSchema } from "./schemas"
+import type {
+  createDealSchema,
+  dealListSchema,
+  reassignDealOwnerSchema,
+} from "./schemas"
+import { formatScaledDecimal, parseExactDecimal } from "./decimal"
 import {
   recordOperationalMutation,
   requireOperationsActor,
@@ -26,6 +32,7 @@ import {
 
 type DealListInput = z.infer<typeof dealListSchema>
 type CreateDealInput = z.infer<typeof createDealSchema>
+type ReassignDealOwnerInput = z.infer<typeof reassignDealOwnerSchema>
 
 const ownerUsers = alias(users, "deal_owner_users")
 const creatorUsers = alias(users, "deal_creator_users")
@@ -195,11 +202,50 @@ async function requireActiveEntity(
   if (!record) throw new Error(`${label} is not active in this organization.`)
 }
 
+async function requireActiveMemberOwner(
+  tx: Parameters<
+    Parameters<ReturnType<typeof getDatabase>["transaction"]>[0]
+  >[0],
+  organizationId: string,
+  ownerMembershipId: string
+) {
+  const owner = (
+    await tx
+      .select({ id: memberships.id, name: users.name })
+      .from(memberships)
+      .innerJoin(users, eq(users.id, memberships.userId))
+      .where(
+        and(
+          eq(memberships.id, ownerMembershipId),
+          eq(memberships.organizationId, organizationId),
+          eq(memberships.status, "ACTIVE"),
+          eq(users.status, "ACTIVE"),
+          eq(memberships.role, "MEMBER")
+        )
+      )
+      .limit(1)
+  ).at(0)
+  if (!owner)
+    throw new Error("Owner must be an active Member of this organization.")
+  return owner
+}
+
+function resolveInitialOwnerMembershipId(
+  actor: SafeAuthContext,
+  input: CreateDealInput
+) {
+  if (actor.membership.role === "MEMBER") return actor.membership.id
+  requireRole(actor, ["ADMIN"])
+  if (!input.ownerMembershipId) throw new Error("Owner Member is required.")
+  return input.ownerMembershipId
+}
+
 export async function createDeal(
   actor: SafeAuthContext,
   input: CreateDealInput
 ) {
   const organizationId = requireOperationsActor(actor)
+  const ownerMembershipId = resolveInitialOwnerMembershipId(actor, input)
   const db = getDatabase()
   const id = randomUUID()
   const dealNumber = `DL-${new Date().toISOString().slice(0, 10).replaceAll("-", "")}-${id.slice(0, 8).toUpperCase()}`
@@ -225,24 +271,11 @@ export async function createDeal(
       organizationId,
       "Pickup location"
     )
-    const owner = (
-      await tx
-        .select({ id: memberships.id })
-        .from(memberships)
-        .innerJoin(users, eq(users.id, memberships.userId))
-        .where(
-          and(
-            eq(memberships.id, input.ownerMembershipId),
-            eq(memberships.organizationId, organizationId),
-            eq(memberships.status, "ACTIVE"),
-            eq(users.status, "ACTIVE"),
-            or(eq(memberships.role, "MEMBER"), eq(memberships.role, "ADMIN"))
-          )
-        )
-        .limit(1)
-    ).at(0)
-    if (!owner)
-      throw new Error("Owner is not an active member of this organization.")
+    const owner = await requireActiveMemberOwner(
+      tx,
+      organizationId,
+      ownerMembershipId
+    )
     const [record] = await tx
       .insert(deals)
       .values({
@@ -254,7 +287,7 @@ export async function createDeal(
         pickupLocationId: input.pickupLocationId,
         purchaseRate: input.purchaseRate,
         expectedQuantityMt: input.expectedQuantityMt,
-        ownerMembershipId: input.ownerMembershipId,
+        ownerMembershipId,
         status: "ACTIVE",
         notes: input.notes,
         createdByMembershipId: actor.membership.id,
@@ -273,7 +306,70 @@ export async function createDeal(
       message: `${actor.user.name} created Deal ${dealNumber}`,
       entityType: "DEAL",
       entityId: id,
-      after: { dealNumber, status: "ACTIVE", ...input },
+      after: {
+        dealNumber,
+        status: "ACTIVE",
+        ...input,
+        ownerMembershipId: owner.id,
+      },
+    })
+    return record
+  })
+}
+
+export async function reassignDealOwner(
+  actor: SafeAuthContext,
+  input: ReassignDealOwnerInput
+) {
+  const organizationId = requireOperationsActor(actor)
+  requireRole(actor, ["ADMIN"])
+  const db = getDatabase()
+  return db.transaction(async (tx) => {
+    const current = (
+      await tx
+        .select({
+          id: deals.id,
+          dealNumber: deals.dealNumber,
+          ownerMembershipId: deals.ownerMembershipId,
+          version: deals.version,
+        })
+        .from(deals)
+        .where(
+          and(eq(deals.organizationId, organizationId), eq(deals.id, input.id))
+        )
+        .limit(1)
+    ).at(0)
+    if (!current) throw new Error("Deal not found.")
+    if (current.version !== input.version)
+      throw new Error("Deal was changed by someone else. Reload and try again.")
+
+    const targetOwner = await requireActiveMemberOwner(
+      tx,
+      organizationId,
+      input.ownerMembershipId
+    )
+    if (current.ownerMembershipId === targetOwner.id) return current
+
+    const [record] = await tx
+      .update(deals)
+      .set({
+        ownerMembershipId: targetOwner.id,
+        updatedByMembershipId: actor.membership.id,
+        updatedAt: new Date(),
+        version: sql`${deals.version} + 1`,
+      })
+      .where(
+        and(eq(deals.organizationId, organizationId), eq(deals.id, input.id))
+      )
+      .returning()
+
+    await recordOperationalMutation(tx, actor, {
+      action: "DEAL_OWNER_REASSIGNED",
+      message: `${actor.user.name} reassigned Deal ${current.dealNumber} owner to ${targetOwner.name}`,
+      entityType: "DEAL",
+      entityId: current.id,
+      before: { ownerMembershipId: current.ownerMembershipId },
+      after: { ownerMembershipId: targetOwner.id },
     })
     return record
   })
@@ -287,11 +383,13 @@ export async function getDeal(actor: SafeAuthContext, id: string) {
       .select({
         id: deals.id,
         dealNumber: deals.dealNumber,
+        vendorId: deals.vendorId,
         vendor: vendors.name,
         pickup: locations.name,
         material: materials.name,
         purchaseRate: deals.purchaseRate,
         expectedQuantityMt: deals.expectedQuantityMt,
+        ownerMembershipId: deals.ownerMembershipId,
         owner: ownerUsers.name,
         createdBy: creatorUsers.name,
         notes: deals.notes,
@@ -346,6 +444,8 @@ export async function getDeal(actor: SafeAuthContext, id: string) {
       id: trips.id,
       tripNumber: trips.tripNumber,
       status: trips.status,
+      finalWeightMt: trips.finalWeightMt,
+      acceptedFinalWeightMt: trips.acceptedFinalWeightMt,
       createdAt: trips.createdAt,
     })
     .from(trips)
@@ -369,5 +469,40 @@ export async function getDeal(actor: SafeAuthContext, id: string) {
     )
     .orderBy(desc(activityEvents.createdAt))
     .limit(50)
-  return { ...record, trips: dealTrips, events }
+  const completedStatuses = new Set(["SETTLED", "ARCHIVED"])
+  const activeStatuses = new Set([
+    "CREATED",
+    "TRUCK_ASSIGNED",
+    "LOADING",
+    "LOADED",
+    "IN_TRANSIT",
+    "DELIVERED",
+    "SETTLEMENT_PENDING",
+  ])
+  const deliveredMilli = dealTrips.reduce((total, trip) => {
+    const weight = trip.acceptedFinalWeightMt ?? trip.finalWeightMt
+    return weight
+      ? total + parseExactDecimal(weight, { scale: 3, integerDigits: 9 })
+      : total
+  }, 0n)
+  return {
+    ...record,
+    trips: dealTrips,
+    events,
+    tripSummary: {
+      active: dealTrips.filter((trip) => activeStatuses.has(trip.status))
+        .length,
+      completed: dealTrips.filter((trip) => completedStatuses.has(trip.status))
+        .length,
+      cancelled: dealTrips.filter((trip) => trip.status === "CANCELLED").length,
+      deliveredQuantityMt: formatScaledDecimal(deliveredMilli, 3),
+      closeBlockers: dealTrips
+        .filter(
+          (trip) => !["CANCELLED", "SETTLED", "ARCHIVED"].includes(trip.status)
+        )
+        .map(
+          (trip) => `${trip.tripNumber} is ${trip.status.replaceAll("_", " ")}`
+        ),
+    },
+  }
 }

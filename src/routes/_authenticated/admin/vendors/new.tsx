@@ -4,6 +4,10 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useServerFn } from "@tanstack/react-start"
 
 import { PageHeader } from "@/components/admin/page-header"
+import {
+  DynamicFields,
+  parseCustomFieldValues,
+} from "@/components/custom-fields/dynamic-fields"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,13 +30,22 @@ import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { createVendorFn } from "@/server/admin/admin.functions"
+import {
+  getCustomFieldDefinitionsForCreateFn,
+  saveCustomFieldValuesFn,
+  validateCustomFieldValuesForCreateFn,
+} from "@/server/custom-fields/custom-field.functions"
 
 export const Route = createFileRoute("/_authenticated/admin/vendors/new")({
+  loader: () => getCustomFieldDefinitionsForCreateFn({ data: "VENDOR" }),
   component: NewVendorPage,
 })
 
 function NewVendorPage() {
   const createVendor = useServerFn(createVendorFn)
+  const saveCustomFields = useServerFn(saveCustomFieldValuesFn)
+  const validateCustomFields = useServerFn(validateCustomFieldValuesForCreateFn)
+  const customFields = Route.useLoaderData()
   const navigate = useNavigate()
   const [loginEnabled, setLoginEnabled] = useState(false)
   const [pending, setPending] = useState(false)
@@ -43,6 +56,10 @@ function NewVendorPage() {
     setError(null)
     const form = new FormData(event.currentTarget)
     try {
+      const customValues = parseCustomFieldValues(form)
+      await validateCustomFields({
+        data: { target: "VENDOR", values: customValues },
+      })
       const created = await createVendor({
         data: {
           name: String(form.get("name") ?? ""),
@@ -55,6 +72,13 @@ function NewVendorPage() {
           loginName: String(form.get("loginName") ?? ""),
           loginPhone: String(form.get("loginPhone") ?? ""),
           temporaryPassword: String(form.get("temporaryPassword") ?? ""),
+        },
+      })
+      await saveCustomFields({
+        data: {
+          target: "VENDOR",
+          recordId: created.id,
+          values: customValues,
         },
       })
       await navigate({
@@ -170,6 +194,12 @@ function NewVendorPage() {
                 </CardContent>
               </Card>
             ) : null}
+            <DynamicFields
+              target="VENDOR"
+              recordId={null}
+              fields={customFields.fields}
+              inputName="customFields"
+            />
             {error ? (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>

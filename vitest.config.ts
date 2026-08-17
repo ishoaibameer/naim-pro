@@ -5,5 +5,6 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     passWithNoTests: true,
+    exclude: ["node_modules/**", "tests/e2e/**", "tests/integration/**"],
   },
 })

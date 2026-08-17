@@ -3,20 +3,33 @@ import { getRequest, setResponseHeader } from "@tanstack/react-start/server"
 
 import { operationsMiddleware } from "@/server/auth/middleware"
 import { assertSameOrigin } from "@/server/auth/request-security.server"
+import { createInlineLocation } from "@/server/admin/locations.server"
+import { createInlineMaterial } from "@/server/admin/materials.server"
+import { createInlineVendor } from "@/server/admin/vendors.server"
 import { listOperationalActivity } from "./activity.server"
 import { getOperationsDashboard } from "./dashboard.server"
-import { createDeal, getDeal, listDeals } from "./deals.server"
+import {
+  createDeal,
+  getDeal,
+  listDeals,
+  reassignDealOwner,
+} from "./deals.server"
 import { getOperationalMasters } from "./masters.server"
 import {
   cancelTripSchema,
   confirmDeliverySchema,
   confirmLoadingSchema,
   createDealSchema,
+  createInlineLocationSchema,
+  createInlineMaterialSchema,
+  createInlineVendorSchema,
   createTripSchema,
   dealListSchema,
   entityIdSchema,
   tripListSchema,
   tripMutationSchema,
+  operationalActivityQuerySchema,
+  reassignDealOwnerSchema,
 } from "./schemas"
 import {
   cancelTrip,
@@ -76,6 +89,34 @@ export const createDealFn = createServerFn({ method: "POST" })
     mutationRequest()
     return createDeal(context.auth, data)
   })
+export const reassignDealOwnerFn = createServerFn({ method: "POST" })
+  .middleware([operationsMiddleware])
+  .validator(reassignDealOwnerSchema)
+  .handler(async ({ context, data }) => {
+    mutationRequest()
+    return reassignDealOwner(context.auth, data)
+  })
+export const createInlineVendorFn = createServerFn({ method: "POST" })
+  .middleware([operationsMiddleware])
+  .validator(createInlineVendorSchema)
+  .handler(async ({ context, data }) => {
+    mutationRequest()
+    return createInlineVendor(context.auth, data)
+  })
+export const createInlineLocationFn = createServerFn({ method: "POST" })
+  .middleware([operationsMiddleware])
+  .validator(createInlineLocationSchema)
+  .handler(async ({ context, data }) => {
+    mutationRequest()
+    return createInlineLocation(context.auth, data)
+  })
+export const createInlineMaterialFn = createServerFn({ method: "POST" })
+  .middleware([operationsMiddleware])
+  .validator(createInlineMaterialSchema)
+  .handler(async ({ context, data }) => {
+    mutationRequest()
+    return createInlineMaterial(context.auth, data)
+  })
 export const listTripsFn = createServerFn({ method: "GET" })
   .middleware([operationsMiddleware])
   .validator(tripListSchema)
@@ -134,7 +175,8 @@ export const cancelTripFn = createServerFn({ method: "POST" })
   })
 export const listOperationalActivityFn = createServerFn({ method: "GET" })
   .middleware([operationsMiddleware])
-  .handler(async ({ context }) => {
+  .validator(operationalActivityQuerySchema)
+  .handler(async ({ context, data }) => {
     noStore()
-    return listOperationalActivity(context.auth)
+    return listOperationalActivity(context.auth, data)
   })

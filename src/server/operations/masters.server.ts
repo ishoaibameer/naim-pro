@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only"
 
-import { and, asc, eq, inArray } from "drizzle-orm"
+import { and, asc, eq } from "drizzle-orm"
 
 import type { SafeAuthContext } from "@/server/auth/types"
 import { getDatabase } from "@/server/db/index.server"
@@ -109,7 +109,7 @@ export async function getOperationalMasters(actor: SafeAuthContext) {
           eq(memberships.organizationId, organizationId),
           eq(memberships.status, "ACTIVE"),
           eq(users.status, "ACTIVE"),
-          inArray(memberships.role, ["ADMIN", "MEMBER"])
+          eq(memberships.role, "MEMBER")
         )
       )
       .orderBy(asc(users.name)),

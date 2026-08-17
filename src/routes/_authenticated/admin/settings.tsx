@@ -1,33 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router"
 
 import { PageHeader } from "@/components/admin/page-header"
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { OrganizationSettingsForm } from "@/components/admin/organization-settings-form"
+import { getOrganizationSettingsFn } from "@/server/product/product.functions"
 
 export const Route = createFileRoute("/_authenticated/admin/settings")({
+  loader: () => getOrganizationSettingsFn(),
   component: SettingsPage,
 })
 
 function SettingsPage() {
+  const settings = Route.useLoaderData()
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         eyebrow="System"
         title="Settings"
-        description="Organization settings will be introduced when their business rules are defined."
+        description="Organization-scoped operational policy and fixed accounting conventions."
       />
-      <Card>
-        <CardHeader>
-          <CardTitle>Settings foundation</CardTitle>
-          <CardDescription>
-            No speculative settings or fake controls have been added.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <OrganizationSettingsForm settings={settings} />
     </div>
   )
 }

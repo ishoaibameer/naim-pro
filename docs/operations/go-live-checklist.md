@@ -1,0 +1,26 @@
+# Go-Live Checklist
+
+- [ ] Production owner, incident commander, and provider support contacts recorded.
+- [ ] DNS configured and HTTPS certificate/redirect verified.
+- [ ] `APP_ENV=production`, exact `APP_ORIGIN`, and independent production secrets configured.
+- [ ] Development/staging credentials are absent from production.
+- [ ] Separate encrypted production PostgreSQL database and least-privilege runtime/migration roles verified.
+- [ ] Reviewed forward migrations applied with preflight evidence.
+- [ ] Automatic backups/PITR, retention, alerts, and a successful isolated restore drill verified.
+- [ ] Private S3-compatible bucket, restricted credentials, CORS, and public-access block verified.
+- [ ] Malware-scanning gate decision explicitly approved; scanning is not falsely claimed.
+- [ ] Initial Admin bootstrapped with an explicit strong password; bootstrap variables removed.
+- [ ] Secure `__Host-naim_session` cookie and session expiry/revocation verified over HTTPS.
+- [ ] CSP, HSTS, frame, referrer, permissions, and content-type headers verified.
+- [ ] Trusted proxy mode and forwarding-header stripping verified.
+- [ ] ADMIN/MEMBER/VENDOR/DRIVER direct-URL authorization matrix executed.
+- [ ] Upload/download, long filenames, checksums, failed-upload cleanup, and storage outage tested.
+- [ ] Reports/CSV bounds and organization isolation tested.
+- [ ] CI, integration suite, E2E acceptance, and manual MVP QA are green.
+- [ ] Structured logs, request IDs, retention, alerts, and error-monitor destination verified.
+- [ ] `/health/live` and `/health/ready` monitored independently.
+- [ ] Rollback image, database recovery steps, and responsible approvers recorded.
+- [ ] Secret-safety scan passes tracked files and build output.
+- [ ] Session, database, storage, and platform secret rotation procedure rehearsed.
+- [ ] Email, SMS, GPS, OCR, AI, offline sync, and Tally integrations confirmed intentionally absent.
+- [ ] Post-deploy verification owner and support window scheduled.

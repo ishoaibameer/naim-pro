@@ -5,6 +5,7 @@ import {
   foreignKey,
   index,
   integer,
+  numeric,
   pgTable,
   text,
   timestamp,
@@ -22,6 +23,16 @@ export const organizations = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     name: varchar("name", { length: 160 }).notNull(),
     legalName: varchar("legal_name", { length: 200 }),
+    weightWarningThresholdPct: numeric("weight_warning_threshold_pct", {
+      precision: 6,
+      scale: 3,
+    })
+      .default("1.000")
+      .notNull(),
+    expectedTransitDurationHours: integer("expected_transit_duration_hours")
+      .default(48)
+      .notNull(),
+    defaultPageSize: integer("default_page_size").default(20).notNull(),
     status: recordStatusEnum("status").default("ACTIVE").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -34,6 +45,18 @@ export const organizations = pgTable(
   },
   (table) => [
     check("organizations_version_positive", sql`${table.version} > 0`),
+    check(
+      "organizations_weight_threshold_range",
+      sql`${table.weightWarningThresholdPct} > 0 AND ${table.weightWarningThresholdPct} <= 100`
+    ),
+    check(
+      "organizations_transit_duration_range",
+      sql`${table.expectedTransitDurationHours} BETWEEN 1 AND 720`
+    ),
+    check(
+      "organizations_default_page_size_range",
+      sql`${table.defaultPageSize} BETWEEN 10 AND 100`
+    ),
   ]
 )
 

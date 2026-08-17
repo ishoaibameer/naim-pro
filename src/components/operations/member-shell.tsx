@@ -9,7 +9,12 @@ import {
   IconDashboard,
   IconDots,
   IconFileInvoice,
+  IconFiles,
   IconLogout,
+  IconCash,
+  IconBell,
+  IconChartBar,
+  IconSearch,
   IconTruckDelivery,
 } from "@tabler/icons-react"
 
@@ -33,6 +38,11 @@ const primary = [
   { label: "Trips", to: "/app/trips", icon: IconTruckDelivery },
 ] as const
 const more = [
+  { label: "Search", to: "/app/search", icon: IconSearch },
+  { label: "Notifications", to: "/app/notifications", icon: IconBell },
+  { label: "Reports", to: "/app/reports", icon: IconChartBar },
+  { label: "Payments", to: "/app/payments", icon: IconCash },
+  { label: "Documents", to: "/app/documents", icon: IconFiles },
   { label: "Vendors", to: "/app/vendors", icon: IconBuilding },
   { label: "Transporters", to: "/app/transporters", icon: IconTruckDelivery },
   { label: "Companies", to: "/app/companies", icon: IconBuilding },

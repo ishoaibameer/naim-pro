@@ -43,12 +43,14 @@ export const bills = pgTable(
       .references(() => organizations.id),
     companyId: uuid("company_id").notNull(),
     billNumber: varchar("bill_number", { length: 64 }).notNull(),
+    idempotencyKey: varchar("idempotency_key", { length: 80 }),
     billDate: date("bill_date").notNull(),
     status: billStatusEnum("status").default("DRAFT").notNull(),
     totalAmount: numeric("total_amount", {
       precision: MONEY_PRECISION,
       scale: MONEY_SCALE,
     }).notNull(),
+    notes: text("notes"),
     currency: varchar("currency", { length: 3 }).default("INR").notNull(),
     createdByMembershipId: uuid("created_by_membership_id").notNull(),
     updatedByMembershipId: uuid("updated_by_membership_id").notNull(),
@@ -72,6 +74,9 @@ export const bills = pgTable(
       table.organizationId,
       table.billNumber
     ),
+    uniqueIndex("bills_org_idempotency_unique")
+      .on(table.organizationId, table.idempotencyKey)
+      .where(sql`${table.idempotencyKey} IS NOT NULL`),
     foreignKey({
       columns: [table.organizationId, table.companyId],
       foreignColumns: [companies.organizationId, companies.id],
@@ -179,6 +184,7 @@ export const payments = pgTable(
       .notNull()
       .references(() => organizations.id),
     paymentNumber: varchar("payment_number", { length: 64 }).notNull(),
+    idempotencyKey: varchar("idempotency_key", { length: 80 }),
     direction: paymentDirectionEnum("direction").notNull(),
     type: paymentTypeEnum("type").notNull(),
     status: paymentStatusEnum("status").default("DRAFT").notNull(),
@@ -220,6 +226,9 @@ export const payments = pgTable(
       table.organizationId,
       table.paymentNumber
     ),
+    uniqueIndex("payments_org_idempotency_unique")
+      .on(table.organizationId, table.idempotencyKey)
+      .where(sql`${table.idempotencyKey} IS NOT NULL`),
     foreignKey({
       columns: [table.organizationId, table.vendorId],
       foreignColumns: [vendors.organizationId, vendors.id],

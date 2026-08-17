@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { FormEvent } from "react"
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
 import { useServerFn } from "@tanstack/react-start"
@@ -34,6 +34,9 @@ function LoginPage() {
   const loginFn = useServerFn(login)
   const [isPending, setIsPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => setHydrated(true), [])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -71,7 +74,11 @@ function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+          <form
+            className="flex flex-col gap-6"
+            method="post"
+            onSubmit={handleSubmit}
+          >
             <FieldGroup className="gap-5">
               <Field data-invalid={Boolean(error)}>
                 <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
@@ -106,7 +113,7 @@ function LoginPage() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             ) : null}
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" disabled={!hydrated || isPending}>
               {isPending ? <Spinner data-icon="inline-start" /> : null}
               {isPending ? "Signing in..." : "Login"}
             </Button>

@@ -18,22 +18,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { formatDateTime } from "@/lib/format"
+import { formatDateTime, formatInr } from "@/lib/format"
+import { getFinanceDashboardFn } from "@/server/finance/finance.functions"
 import { getOperationsDashboardFn } from "@/server/operations/operations.functions"
 
 export const Route = createFileRoute("/_authenticated/app/")({
-  loader: () => getOperationsDashboardFn(),
+  loader: async () => {
+    const [operations, finance] = await Promise.all([
+      getOperationsDashboardFn(),
+      getFinanceDashboardFn(),
+    ])
+    return { operations, finance }
+  },
   component: OperationsDashboard,
 })
 
 function OperationsDashboard() {
-  const data = Route.useLoaderData()
+  const { operations: data, finance } = Route.useLoaderData()
   const cards = [
     ["Active Deals", data.counts.activeDeals, IconFileInvoice],
     ["Loading", data.counts.loading, IconLoader],
     ["In Transit", data.counts.inTransit, IconTruckDelivery],
     ["Delivered Today", data.counts.deliveredToday, IconCircleCheck],
-    ["Needs Attention", data.counts.needsAttention, IconAlertTriangle],
+    ["Weight Issues", data.counts.weightIssues, IconAlertTriangle],
+    ["Delayed", data.counts.delayed, IconAlertTriangle],
   ] as const
   return (
     <div className="flex flex-col gap-8">
@@ -48,7 +56,7 @@ function OperationsDashboard() {
         }
       />
       <section
-        className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5"
+        className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6"
         aria-label="Operational counts"
       >
         {cards.map(([label, value, Icon]) => (
@@ -63,12 +71,34 @@ function OperationsDashboard() {
           </Card>
         ))}
       </section>
+      <section
+        className="grid gap-3 sm:grid-cols-3"
+        aria-label="Financial summary"
+      >
+        {[
+          ["Vendor Pending", finance.vendorPending],
+          ["Transporter Pending", finance.transporterPending],
+          ["Company Receivable", finance.companyReceivable],
+        ].map(([label, value]) => (
+          <Card key={label}>
+            <CardHeader>
+              <CardTitle className="text-sm">{label}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-semibold tabular-nums">
+                {formatInr(value)}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
       <div className="grid gap-6 xl:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Needs Attention</CardTitle>
             <CardDescription>
-              Delivered trips over the 1% weight threshold.
+              Delayed movement and delivered Trips over the configured{" "}
+              {data.settings.weightThreshold}% weight threshold.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
@@ -81,7 +111,11 @@ function OperationsDashboard() {
                   className="flex items-center justify-between gap-3 border-b py-2"
                 >
                   <span>{item.tripNumber}</span>
-                  <OperationsStatusBadge status="WEIGHT ISSUE" />
+                  <OperationsStatusBadge
+                    status={
+                      item.kind === "DELAYED" ? "DELAYED" : "WEIGHT ISSUE"
+                    }
+                  />
                 </Link>
               ))
             ) : (
@@ -135,6 +169,38 @@ function OperationsDashboard() {
           </CardContent>
         </Card>
       </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Financial Attention</CardTitle>
+          <CardDescription>
+            Delivered trips blocked from final settlement.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          {finance.attention.length ? (
+            finance.attention.map((item) => (
+              <Link
+                key={item.id}
+                to="/app/trips/$tripId"
+                params={{ tripId: item.id }}
+                className="flex items-start justify-between gap-3 border-b py-3"
+              >
+                <div>
+                  <p className="font-medium">{item.tripNumber}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.blockers.join(" · ") || "Settlement review required"}
+                  </p>
+                </div>
+                <OperationsStatusBadge status={item.status} />
+              </Link>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No financial settlement blockers.
+            </p>
+          )}
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>

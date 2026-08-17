@@ -5,28 +5,34 @@ import { z } from "zod"
 
 import { PageHeader } from "@/components/admin/page-header"
 import { RecordEmpty } from "@/components/admin/record-empty"
-import { Badge } from "@/components/ui/badge"
+import { ActivityEntry } from "@/components/product/activity-entry"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { formatDateTime } from "@/lib/format"
 import { listActivityFn } from "@/server/admin/admin.functions"
 
 const searchSchema = z.object({
   q: z.string().catch(""),
   action: z.string().catch(""),
+  entity: z.string().catch(""),
   from: z.string().catch(""),
   to: z.string().catch(""),
 })
 export const Route = createFileRoute("/_authenticated/admin/activity")({
   validateSearch: searchSchema,
-  loaderDeps: ({ search }) => search,
+  loaderDeps: ({ search: { q, action, entity, from, to } }) => ({
+    q,
+    action,
+    entity,
+    from,
+    to,
+  }),
   loader: ({ deps }) =>
     listActivityFn({
       data: {
         search: deps.q,
         action: deps.action,
+        entity: deps.entity,
         from: deps.from,
         to: deps.to,
         page: 1,
@@ -47,6 +53,7 @@ function ActivityPage() {
       search: {
         q: String(form.get("q") ?? ""),
         action: String(form.get("action") ?? ""),
+        entity: String(form.get("entity") ?? ""),
         from: String(form.get("from") ?? ""),
         to: String(form.get("to") ?? ""),
       },
@@ -60,10 +67,19 @@ function ActivityPage() {
         description="Human-readable organization activity without raw audit payloads."
       />
       <form className="rounded-lg border bg-card p-4" onSubmit={filter}>
-        <FieldGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <FieldGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <Field>
             <FieldLabel htmlFor="activity-user">Member / User</FieldLabel>
             <Input id="activity-user" name="q" defaultValue={search.q} />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="activity-entity">Entity</FieldLabel>
+            <Input
+              id="activity-entity"
+              name="entity"
+              defaultValue={search.entity}
+              placeholder="e.g. TRIP"
+            />
           </Field>
           <Field>
             <FieldLabel htmlFor="activity-action">Action Type</FieldLabel>
@@ -106,27 +122,7 @@ function ActivityPage() {
       ) : (
         <div className="flex flex-col gap-3">
           {items.map((item) => (
-            <Card key={item.id}>
-              <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex min-w-0 flex-col gap-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="secondary">{item.eventType}</Badge>
-                    {item.entityType ? (
-                      <span className="text-xs text-muted-foreground">
-                        {item.entityType}
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="text-sm">{item.message}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {item.actorName ?? "System"}
-                  </p>
-                </div>
-                <time className="shrink-0 text-xs text-muted-foreground">
-                  {formatDateTime(item.createdAt)}
-                </time>
-              </CardContent>
-            </Card>
+            <ActivityEntry key={item.id} item={item} />
           ))}
         </div>
       )}

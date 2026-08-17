@@ -9,6 +9,7 @@ import type { Database } from "@/server/db/index.server"
 import { requireRole } from "@/server/auth/policy"
 import type { SafeAuthContext } from "@/server/auth/types"
 import type { TripStatus } from "./trip-state"
+import { insertOperationalNotifications } from "@/server/product/notifications-write.server"
 
 export type OperationsTransaction = Parameters<
   Parameters<Database["transaction"]>[0]
@@ -29,7 +30,14 @@ export async function recordOperationalMutation(
   input: {
     action: string
     message: string
-    entityType: "DEAL" | "TRIP"
+    entityType:
+      | "DEAL"
+      | "TRIP"
+      | "PAYMENT"
+      | "BILL"
+      | "DOCUMENT"
+      | "CUSTOM_FIELD"
+      | "DRIVER_EXPENSE"
     entityId: string
     before?: Record<string, unknown> | null
     after?: Record<string, unknown> | null
@@ -56,6 +64,13 @@ export async function recordOperationalMutation(
     before: input.before ?? null,
     after: input.after ?? null,
     reason: input.reason ?? null,
+  })
+  await insertOperationalNotifications(transaction, {
+    organizationId: actor.membership.organizationId,
+    action: input.action,
+    message: input.message,
+    entityType: input.entityType,
+    entityId: input.entityId,
   })
 }
 

@@ -184,6 +184,10 @@ export const trips = pgTable(
       precision: WEIGHT_PRECISION,
       scale: WEIGHT_SCALE,
     }),
+    agreedFreightAmount: numeric("agreed_freight_amount", {
+      precision: MONEY_PRECISION,
+      scale: MONEY_SCALE,
+    }),
     challanNumber: varchar("challan_number", { length: 80 }),
     normalizedChallanNumber: varchar("normalized_challan_number", {
       length: 80,
@@ -302,6 +306,10 @@ export const trips = pgTable(
     check(
       "trips_accepted_weight_nonnegative",
       sql`${table.acceptedFinalWeightMt} IS NULL OR ${table.acceptedFinalWeightMt} >= 0`
+    ),
+    check(
+      "trips_freight_nonnegative",
+      sql`${table.agreedFreightAmount} IS NULL OR ${table.agreedFreightAmount} >= 0`
     ),
     check(
       "trips_delivery_after_dispatch",
@@ -468,6 +476,36 @@ export const tripSettlements = pgTable(
       precision: MONEY_PRECISION,
       scale: MONEY_SCALE,
     }).notNull(),
+    vendorPaidAmount: numeric("vendor_paid_amount", {
+      precision: MONEY_PRECISION,
+      scale: MONEY_SCALE,
+    })
+      .default("0")
+      .notNull(),
+    agreedFreightAmount: numeric("agreed_freight_amount", {
+      precision: MONEY_PRECISION,
+      scale: MONEY_SCALE,
+    })
+      .default("0")
+      .notNull(),
+    transporterPaidAmount: numeric("transporter_paid_amount", {
+      precision: MONEY_PRECISION,
+      scale: MONEY_SCALE,
+    })
+      .default("0")
+      .notNull(),
+    billedAmount: numeric("billed_amount", {
+      precision: MONEY_PRECISION,
+      scale: MONEY_SCALE,
+    })
+      .default("0")
+      .notNull(),
+    companyReceivedAmount: numeric("company_received_amount", {
+      precision: MONEY_PRECISION,
+      scale: MONEY_SCALE,
+    })
+      .default("0")
+      .notNull(),
     sourceTripVersion: integer("source_trip_version").notNull(),
     postedByMembershipId: uuid("posted_by_membership_id").notNull(),
     postedAt: timestamp("posted_at", { withTimezone: true })
@@ -513,7 +551,7 @@ export const tripSettlements = pgTable(
     check("trip_settlements_rate_nonnegative", sql`${table.purchaseRate} >= 0`),
     check(
       "trip_settlements_amount_nonnegative",
-      sql`${table.purchaseAmount} >= 0`
+      sql`${table.purchaseAmount} >= 0 AND ${table.vendorPaidAmount} >= 0 AND ${table.agreedFreightAmount} >= 0 AND ${table.transporterPaidAmount} >= 0 AND ${table.billedAmount} >= 0 AND ${table.companyReceivedAmount} >= 0`
     ),
     check(
       "trip_settlements_source_version_positive",

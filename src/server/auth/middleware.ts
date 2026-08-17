@@ -23,3 +23,17 @@ export const operationsMiddleware = createMiddleware({ type: "function" })
     requireRole(context.auth, ["ADMIN", "MEMBER"])
     return next()
   })
+
+export const vendorMiddleware = createMiddleware({ type: "function" })
+  .middleware([authMiddleware])
+  .server(async ({ next, context }) => {
+    requireRole(context.auth, ["VENDOR"])
+    return next()
+  })
+
+export const driverMiddleware = createMiddleware({ type: "function" })
+  .middleware([authMiddleware])
+  .server(async ({ next, context }) => {
+    requireRole(context.auth, ["DRIVER"])
+    return next()
+  })

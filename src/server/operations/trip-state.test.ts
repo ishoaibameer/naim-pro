@@ -22,6 +22,9 @@ describe("Trip state machine", () => {
     expect(() => assertTripTransition("DELIVERED", "IN_TRANSIT")).toThrow(
       TripTransitionError
     )
+    expect(() => assertTripTransition("SETTLED", "SETTLED")).toThrow(
+      TripTransitionError
+    )
   })
   it("keeps cancelled terminal and disallows in-transit cancellation", () => {
     expect(canCancelTrip("LOADED")).toBe(true)

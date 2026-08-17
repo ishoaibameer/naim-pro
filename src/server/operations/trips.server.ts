@@ -9,6 +9,7 @@ import {
   gte,
   ilike,
   inArray,
+  isNull,
   lte,
   notInArray,
   or,
@@ -18,15 +19,19 @@ import { alias } from "drizzle-orm/pg-core"
 import type { z } from "zod"
 
 import type { SafeAuthContext } from "@/server/auth/types"
+import { ForbiddenError, requireRole } from "@/server/auth/policy"
 import { getDatabase } from "@/server/db/index.server"
+import { canDriverStartJourney } from "@/server/driver/policy"
 import {
   activityEvents,
   companies,
   deals,
   drivers,
+  driverCheckIns,
   driverTransporterAssignments,
   locations,
   memberships,
+  organizations,
   transporters,
   tripAssignments,
   trips,
@@ -141,6 +146,9 @@ function tripListQuery(
       tripNumber: trips.tripNumber,
       dealId: trips.dealId,
       dealNumber: deals.dealNumber,
+      vendorId: deals.vendorId,
+      transporterId: trips.currentTransporterId,
+      companyId: trips.destinationCompanyId,
       status: trips.status,
       vehicle: vehicles.registrationNumber,
       driver: drivers.name,
@@ -153,6 +161,7 @@ function tripListQuery(
       owner: ownerUsers.name,
       loadedWeightMt: trips.loadedWeightMt,
       finalWeightMt: trips.finalWeightMt,
+      agreedFreightAmount: trips.agreedFreightAmount,
       challanNumber: trips.challanNumber,
       weighmentCardNumber: trips.weighmentCardNumber,
       dispatchedAt: trips.dispatchedAt,
@@ -641,6 +650,73 @@ export async function startJourney(
   })
 }
 
+export async function startJourneyForDriver(
+  actor: SafeAuthContext,
+  input: TripMutationInput,
+  driverId: string
+) {
+  requireRole(actor, ["DRIVER"])
+  const organizationId = actor.membership.organizationId
+  return getDatabase().transaction(async (tx) => {
+    const record = await lockedTrip(tx, organizationId, input)
+    if (record.currentDriverId !== driverId || !record.currentVehicleId)
+      throw new ForbiddenError()
+    const assignment = (
+      await tx
+        .select({ id: tripAssignments.id })
+        .from(tripAssignments)
+        .innerJoin(
+          vehicles,
+          and(
+            eq(vehicles.organizationId, tripAssignments.organizationId),
+            eq(vehicles.id, tripAssignments.vehicleId),
+            eq(vehicles.status, "ACTIVE")
+          )
+        )
+        .where(
+          and(
+            eq(tripAssignments.organizationId, organizationId),
+            eq(tripAssignments.tripId, record.id),
+            eq(tripAssignments.driverId, driverId),
+            eq(tripAssignments.vehicleId, record.currentVehicleId),
+            isNull(tripAssignments.endedAt)
+          )
+        )
+        .limit(1)
+        .for("update")
+    ).at(0)
+    if (
+      !canDriverStartJourney({
+        status: record.status,
+        currentDriverId: record.currentDriverId,
+        driverId,
+        hasOpenAssignment: Boolean(assignment),
+        vehicleActive: Boolean(assignment),
+      })
+    )
+      throw new ForbiddenError()
+    const updated = await changeStatus(
+      tx,
+      actor,
+      record,
+      "IN_TRANSIT",
+      { dispatchedAt: new Date() },
+      {
+        action: "TRIP_JOURNEY_STARTED",
+        message: `${actor.user.name} started the journey for Trip ${record.tripNumber}`,
+      }
+    )
+    await tx.insert(driverCheckIns).values({
+      organizationId,
+      tripId: record.id,
+      driverId,
+      type: "JOURNEY_STARTED",
+      actorMembershipId: actor.membership.id,
+    })
+    return updated
+  })
+}
+
 export async function confirmDelivery(
   actor: SafeAuthContext,
   input: DeliveryInput
@@ -649,9 +725,18 @@ export async function confirmDelivery(
   return getDatabase().transaction(async (tx) => {
     const record = await lockedTrip(tx, organizationId, input)
     if (!record.loadedWeightMt) throw new Error("Loaded weight is missing.")
+    const settings = (
+      await tx
+        .select({ threshold: organizations.weightWarningThresholdPct })
+        .from(organizations)
+        .where(eq(organizations.id, organizationId))
+        .limit(1)
+    ).at(0)
+    if (!settings) throw new ForbiddenError()
     const weight = calculateWeightReconciliation(
       record.loadedWeightMt,
-      input.finalWeightMt
+      input.finalWeightMt,
+      settings.threshold
     )
     const weightMetadata = { ...weight }
     const updated = await changeStatus(
@@ -722,28 +807,36 @@ export async function getTrip(actor: SafeAuthContext, id: string) {
     await tripListQuery(db, organizationId, template, id).limit(1)
   ).at(0)
   if (!record) throw new Error("Trip not found.")
-  const events = await db
-    .select({
-      id: activityEvents.id,
-      message: activityEvents.message,
-      eventType: activityEvents.eventType,
-      createdAt: activityEvents.createdAt,
-    })
-    .from(activityEvents)
-    .where(
-      and(
-        eq(activityEvents.organizationId, organizationId),
-        eq(activityEvents.entityType, "TRIP"),
-        eq(activityEvents.entityId, id)
+  const [events, settings] = await Promise.all([
+    db
+      .select({
+        id: activityEvents.id,
+        message: activityEvents.message,
+        eventType: activityEvents.eventType,
+        createdAt: activityEvents.createdAt,
+      })
+      .from(activityEvents)
+      .where(
+        and(
+          eq(activityEvents.organizationId, organizationId),
+          eq(activityEvents.entityType, "TRIP"),
+          eq(activityEvents.entityId, id)
+        )
       )
-    )
-    .orderBy(desc(activityEvents.createdAt))
-    .limit(50)
+      .orderBy(desc(activityEvents.createdAt))
+      .limit(50),
+    db
+      .select({ threshold: organizations.weightWarningThresholdPct })
+      .from(organizations)
+      .where(eq(organizations.id, organizationId))
+      .limit(1),
+  ])
   const weight =
     record.loadedWeightMt && record.finalWeightMt
       ? calculateWeightReconciliation(
           record.loadedWeightMt,
-          record.finalWeightMt
+          record.finalWeightMt,
+          settings.at(0)?.threshold
         )
       : null
   return { ...record, events, weight }

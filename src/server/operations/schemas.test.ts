@@ -16,6 +16,17 @@ describe("operational input contracts", () => {
     expect(result.purchaseRate).toBe("1200.50")
     expect(result.expectedQuantityMt).toBe("25.320")
   })
+  it("does not require client-submitted owner for Deal creation", () => {
+    const result = createDealSchema.parse({
+      vendorId: id,
+      pickupLocationId: id,
+      materialId: id,
+      purchaseRate: "1200.00",
+      expectedQuantityMt: "",
+      notes: "",
+    })
+    expect(result.ownerMembershipId).toBeUndefined()
+  })
   it("rejects an invalid rate", () => {
     expect(() =>
       createDealSchema.parse({

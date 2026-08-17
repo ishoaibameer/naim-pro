@@ -4,6 +4,10 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useServerFn } from "@tanstack/react-start"
 
 import { PageHeader } from "@/components/admin/page-header"
+import {
+  DynamicFields,
+  parseCustomFieldValues,
+} from "@/components/custom-fields/dynamic-fields"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -28,15 +32,28 @@ import {
   createDriverFn,
   listTransportersFn,
 } from "@/server/admin/admin.functions"
+import {
+  getCustomFieldDefinitionsForCreateFn,
+  saveCustomFieldValuesFn,
+  validateCustomFieldValuesForCreateFn,
+} from "@/server/custom-fields/custom-field.functions"
 
 export const Route = createFileRoute("/_authenticated/admin/drivers/new")({
-  loader: () => listTransportersFn({ data: { search: "" } }),
+  loader: async () => {
+    const [transporters, customFields] = await Promise.all([
+      listTransportersFn({ data: { search: "" } }),
+      getCustomFieldDefinitionsForCreateFn({ data: "DRIVER" }),
+    ])
+    return { transporters, customFields }
+  },
   component: NewDriverPage,
 })
 
 function NewDriverPage() {
-  const transporters = Route.useLoaderData()
+  const { transporters, customFields } = Route.useLoaderData()
   const createDriver = useServerFn(createDriverFn)
+  const saveCustomFields = useServerFn(saveCustomFieldValuesFn)
+  const validateCustomFields = useServerFn(validateCustomFieldValuesForCreateFn)
   const navigate = useNavigate()
   const [loginEnabled, setLoginEnabled] = useState(false)
   const [pending, setPending] = useState(false)
@@ -47,6 +64,10 @@ function NewDriverPage() {
     setError(null)
     const form = new FormData(event.currentTarget)
     try {
+      const customValues = parseCustomFieldValues(form)
+      await validateCustomFields({
+        data: { target: "DRIVER", values: customValues },
+      })
       const created = await createDriver({
         data: {
           name: String(form.get("name") ?? ""),
@@ -57,6 +78,13 @@ function NewDriverPage() {
           loginName: String(form.get("loginName") ?? ""),
           loginPhone: String(form.get("loginPhone") ?? ""),
           temporaryPassword: String(form.get("temporaryPassword") ?? ""),
+        },
+      })
+      await saveCustomFields({
+        data: {
+          target: "DRIVER",
+          recordId: created.id,
+          values: customValues,
         },
       })
       await navigate({
@@ -173,6 +201,12 @@ function NewDriverPage() {
                 </CardContent>
               </Card>
             ) : null}
+            <DynamicFields
+              target="DRIVER"
+              recordId={null}
+              fields={customFields.fields}
+              inputName="customFields"
+            />
             {error ? (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>

@@ -1,4 +1,9 @@
-import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router"
+import {
+  Link,
+  createFileRoute,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router"
 import { useServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
@@ -6,6 +11,7 @@ import { MasterCrudPage } from "@/components/admin/master-crud-page"
 import type { MasterRecord } from "@/components/admin/master-crud-page"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import {
   listTransportersFn,
@@ -79,6 +85,21 @@ function VehiclesPage() {
           record.status === "ACTIVE" ? "INACTIVE" : "ACTIVE"
         )
       }
+      renderRecordActions={(record) => (
+        <Button
+          variant="outline"
+          size="sm"
+          render={
+            <Link
+              to="/app/vehicles/$vehicleId"
+              params={{ vehicleId: record.id }}
+            />
+          }
+          nativeButton={false}
+        >
+          Photo & documents
+        </Button>
+      )}
       renderFields={(record) => (
         <>
           <Field>

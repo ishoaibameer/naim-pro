@@ -37,6 +37,18 @@ export function optionalText(value: string): string | null {
   return trimmed || null
 }
 
+export async function lockMasterName(
+  transaction: DatabaseTransaction,
+  organizationId: string,
+  entityType: "VENDOR" | "LOCATION" | "MATERIAL",
+  normalizedName: string
+): Promise<void> {
+  const lockKey = `${organizationId}:${entityType}:${normalizedName}`
+  await transaction.execute(
+    sql`select pg_advisory_xact_lock(hashtextextended(${lockKey}, 0))`
+  )
+}
+
 export async function recordMutation(
   transaction: DatabaseTransaction,
   actor: SafeAuthContext,

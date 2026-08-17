@@ -36,6 +36,7 @@ export async function listActivity(
       and(
         eq(activityEvents.organizationId, organizationId),
         query.action ? eq(activityEvents.eventType, query.action) : undefined,
+        query.entity ? eq(activityEvents.entityType, query.entity) : undefined,
         from ? gte(activityEvents.createdAt, from) : undefined,
         to ? lte(activityEvents.createdAt, to) : undefined,
         search

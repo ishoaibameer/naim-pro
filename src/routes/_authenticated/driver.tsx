@@ -1,10 +1,25 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
 
-import { RoleLandingPage } from "@/components/admin/role-landing-page"
+import { DriverShell } from "@/components/driver/driver-shell"
+import { requireDriverAccessFn } from "@/server/driver/driver.functions"
 
 export const Route = createFileRoute("/_authenticated/driver")({
-  beforeLoad: ({ context }) => {
-    if (context.auth.membership.role !== "DRIVER") throw redirect({ to: "/" })
+  beforeLoad: async () => {
+    try {
+      return { driverAuth: await requireDriverAccessFn() }
+    } catch {
+      throw redirect({ to: "/" })
+    }
   },
-  component: () => <RoleLandingPage title="Driver workspace" />,
+  component: DriverLayout,
 })
+
+function DriverLayout() {
+  const { driverAuth } = Route.useRouteContext()
+  return (
+    <DriverShell
+      userName={driverAuth.user.name}
+      driverName={driverAuth.driver.name}
+    />
+  )
+}

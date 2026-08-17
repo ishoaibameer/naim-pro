@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { formatDate } from "@/lib/format"
+import { formatDate, formatInr, formatWeight } from "@/lib/format"
 import {
   getOperationalMastersFn,
   listDealsFn,
@@ -221,12 +221,10 @@ function DealsList() {
                 </TableCell>
                 <TableCell>{deal.material}</TableCell>
                 <TableCell>
-                  ₹{deal.purchaseRate}/t
+                  {formatInr(deal.purchaseRate)}/t
                   <br />
                   <span className="text-xs text-muted-foreground">
-                    {deal.expectedQuantityMt
-                      ? `${deal.expectedQuantityMt} t`
-                      : "—"}
+                    {formatWeight(deal.expectedQuantityMt)}
                   </span>
                 </TableCell>
                 <TableCell>{deal.owner}</TableCell>

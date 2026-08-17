@@ -11,6 +11,9 @@ import {
   RECORD_STATUS_VALUES,
   ROLE_VALUES,
   TRIP_STATUS_VALUES,
+  DRIVER_CHECK_IN_TYPE_VALUES,
+  DRIVER_EXPENSE_STATUS_VALUES,
+  DRIVER_EXPENSE_TYPE_VALUES,
   WEIGHT_PRECISION,
   WEIGHT_SCALE,
 } from "./constants"
@@ -50,6 +53,27 @@ describe("database domain constants", () => {
     expect([WEIGHT_PRECISION, WEIGHT_SCALE]).toEqual([12, 3])
     expect([RATE_PRECISION, RATE_SCALE]).toEqual([14, 2])
     expect([MONEY_PRECISION, MONEY_SCALE]).toEqual([16, 2])
+  })
+
+  it("keeps Driver operations vocabularies explicit", () => {
+    expect(DRIVER_CHECK_IN_TYPE_VALUES).toEqual([
+      "REACHED_PICKUP",
+      "JOURNEY_STARTED",
+      "REACHED_DESTINATION",
+    ])
+    expect(DRIVER_EXPENSE_TYPE_VALUES).toEqual([
+      "DIESEL",
+      "TOLL",
+      "PARKING",
+      "OTHER",
+    ])
+    expect(DRIVER_EXPENSE_STATUS_VALUES).toEqual([
+      "PENDING",
+      "APPROVED",
+      "REJECTED",
+    ])
+    expect(schema.driverCheckIns).toBeDefined()
+    expect(schema.driverExpenses).toBeDefined()
   })
 
   it("exports the initial relational schema through one barrel", () => {

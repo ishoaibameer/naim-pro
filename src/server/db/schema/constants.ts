@@ -36,10 +36,60 @@ export const PAYMENT_MODE_VALUES = [
   "OTHER",
 ] as const
 export const BILL_STATUS_VALUES = ["DRAFT", "ISSUED", "VOID"] as const
+export const DOCUMENT_TYPE_VALUES = [
+  "VEHICLE_PHOTO",
+  "LOADING_PHOTO",
+  "WEIGHBRIDGE_SLIP",
+  "PAYMENT_RECEIPT",
+  "DELIVERY_CHALLAN",
+  "BILL",
+  "PERMIT",
+  "OTHER",
+] as const
+export const CUSTOM_FIELD_TARGET_VALUES = [
+  "DEAL",
+  "TRIP_LOADING",
+  "TRIP_DELIVERY",
+  "VENDOR",
+  "DRIVER",
+  "PAYMENT",
+] as const
+export const CUSTOM_FIELD_TYPE_VALUES = [
+  "TEXT",
+  "TEXTAREA",
+  "NUMBER",
+  "CURRENCY",
+  "QUANTITY_TON",
+  "PERCENTAGE",
+  "DATE",
+  "DATETIME",
+  "BOOLEAN",
+  "SELECT",
+  "MULTI_SELECT",
+  "PHONE",
+  "IMAGE",
+  "DOCUMENT",
+] as const
 export const NOTIFICATION_TYPE_VALUES = [
   "INFO",
   "ACTION_REQUIRED",
   "WARNING",
+] as const
+export const DRIVER_CHECK_IN_TYPE_VALUES = [
+  "REACHED_PICKUP",
+  "JOURNEY_STARTED",
+  "REACHED_DESTINATION",
+] as const
+export const DRIVER_EXPENSE_TYPE_VALUES = [
+  "DIESEL",
+  "TOLL",
+  "PARKING",
+  "OTHER",
+] as const
+export const DRIVER_EXPENSE_STATUS_VALUES = [
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
 ] as const
 
 export const WEIGHT_PRECISION = 12

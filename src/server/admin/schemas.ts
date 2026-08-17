@@ -169,6 +169,7 @@ export const locationSchema = z.object({
 export const activityQuerySchema = z.object({
   search: z.string().trim().max(80).default(""),
   action: z.string().trim().max(100).default(""),
+  entity: z.string().trim().max(80).default(""),
   from: z.string().date().or(z.literal("")).default(""),
   to: z.string().date().or(z.literal("")).default(""),
   page: z.number().int().min(1).default(1),

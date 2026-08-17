@@ -48,13 +48,41 @@ export const createDealSchema = z.object({
   expectedQuantityMt: z
     .union([exactWeight, z.literal("")])
     .transform((v) => v || null),
-  ownerMembershipId: uuid,
+  ownerMembershipId: uuid.optional().catch(undefined),
   notes: z
     .string()
     .trim()
     .max(2000)
     .default("")
     .transform((v) => v || null),
+})
+
+export const reassignDealOwnerSchema = z.object({
+  id: uuid,
+  version: z.number().int().positive(),
+  ownerMembershipId: uuid,
+})
+
+const optionalInlineText = (max: number) =>
+  z.string().trim().max(max).default("")
+
+export const createInlineVendorSchema = z.object({
+  name: z.string().trim().min(1).max(180),
+  contactPerson: optionalInlineText(160),
+  phone: optionalInlineText(64),
+  location: optionalInlineText(180),
+  notes: optionalInlineText(4000),
+})
+
+export const createInlineLocationSchema = z.object({
+  name: z.string().trim().min(1).max(180),
+  type: z.enum(["PICKUP", "DESTINATION", "OTHER"]),
+  address: optionalInlineText(4000),
+})
+
+export const createInlineMaterialSchema = z.object({
+  name: z.string().trim().min(1).max(160),
+  description: optionalInlineText(4000),
 })
 
 export const tripListSchema = z.object({
@@ -87,6 +115,14 @@ export const createTripSchema = z.object({
 export const tripMutationSchema = z.object({
   id: uuid,
   version: z.number().int().positive(),
+})
+
+export const operationalActivityQuerySchema = z.object({
+  actor: z.string().trim().max(80).catch(""),
+  type: z.string().trim().max(100).catch(""),
+  entity: z.string().trim().max(80).catch(""),
+  from: z.string().date().or(z.literal("")).catch(""),
+  to: z.string().date().or(z.literal("")).catch(""),
 })
 export const confirmLoadingSchema = tripMutationSchema.extend({
   loadedWeightMt: exactWeight,

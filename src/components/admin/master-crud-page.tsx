@@ -38,6 +38,7 @@ export function MasterCrudPage({
   onSave,
   onToggle,
   onSearch,
+  renderRecordActions,
 }: {
   title: string
   description: string
@@ -46,6 +47,7 @@ export function MasterCrudPage({
   onSave: (form: FormData, record: MasterRecord | null) => Promise<void>
   onToggle: (record: MasterRecord) => Promise<void>
   onSearch?: (search: string) => void
+  renderRecordActions?: (record: MasterRecord) => ReactNode
 }) {
   const [editing, setEditing] = useState<MasterRecord | null>(null)
   const [showForm, setShowForm] = useState(records.length === 0)
@@ -193,6 +195,7 @@ export function MasterCrudPage({
                 </div>
               </CardHeader>
               <CardFooter className="gap-2">
+                {renderRecordActions?.(record)}
                 <Button
                   variant="outline"
                   size="sm"

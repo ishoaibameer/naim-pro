@@ -10,8 +10,15 @@
   "scripts": {
     "dev": "vite dev --port 3000",
     "build": "vite build",
+    "start": "node --env-file-if-exists=.env .output/server/index.mjs",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:db:setup": "tsx scripts/test-database.ts setup",
+    "test:db:reset": "tsx scripts/test-database.ts reset",
+    "test:db:teardown": "tsx scripts/test-database.ts teardown",
+    "test:e2e": "playwright test",
+    "test:e2e:fixtures": "tsx scripts/e2e-fixtures.ts",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx}\"",
     "check": "prettier --check \"**/*.{ts,tsx,js,jsx}\"",
@@ -20,9 +27,13 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:check": "drizzle-kit check",
-    "auth:bootstrap": "tsx scripts/bootstrap-auth.ts"
+    "db:preflight": "tsx scripts/migration-preflight.ts",
+    "auth:bootstrap": "tsx scripts/bootstrap-auth.ts",
+    "auth:bootstrap:production": "tsx scripts/bootstrap-production-admin.ts",
+    "security:secrets": "tsx scripts/secret-safety-check.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1111.0",
     "@base-ui/react": "^1.7.0",
     "@fontsource-variable/inter": "^5.3.0",
     "@tabler/icons-react": "^3.46.0",
@@ -45,6 +56,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tanstack/devtools-vite": "0.8.3",
     "@tanstack/eslint-config": "0.4.0",
     "@testing-library/dom": "^10.4.1",
@@ -57,6 +69,7 @@
     "drizzle-kit": "0.31.10",
     "eslint": "10.0.1",
     "jsdom": "^28",
+    "nitro": "npm:nitro-nightly@3.0.1-20260810-113911-16ff2809",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tsx": "4.23.12",
